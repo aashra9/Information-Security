@@ -1,0 +1,199 @@
+\documentclass[a4paper, 12pt]{book} % changed from scrbook
+% not using \documentclass[a4paper, twoside=semi]{scrreprt} anymore
+
+\usepackage{InfoSec}
+
+\definecolor{bg}{RGB}{20,20,20}
+\definecolor{fg}{RGB}{220,220,220}
+\definecolor{keyword}{RGB}{130,170,255}
+\definecolor{comment}{RGB}{120,120,120}
+\definecolor{string}{RGB}{255,200,120}
+
+\lstdefinestyle{darkbash}{
+    backgroundcolor=\color{bg},
+    basicstyle=\scriptsize\ttfamily\color{fg},
+    keywordstyle=\color{keyword},
+    commentstyle=\color{comment},
+    autogobble=true,
+    stringstyle=\color{string},
+    breaklines=true,
+    showstringspaces=false,
+    frame=single
+}
+
+% \usepackage{titlesec}
+% \setkomafont{chapter}{\Huge\bfseries}
+% \setkomafont{section}{\Large\bfseries}
+% \setkomafont{subsection}{\large\bfseries}
+\usepackage{fancyhdr, lastpage}
+\usepackage{lstautogobble}
+\usepackage{euscript}
+
+
+\makeatletter
+\providecommand{\subtitle}[1]{\gdef\@subtitle{#1}}
+\providecommand{\@subtitle}{}
+\makeatother
+
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+
+
+
+
+\usepackage{newfloat}
+%\usepackage{tocloft}
+
+% % Define new float environment
+% \DeclareFloatingEnvironment[
+%   fileext=lof,
+%   listname={List of Flowcharts},
+%   name=Flowchart,
+% ]{flowchart}
+
+
+\pagestyle{fancy}
+%\fancyhf{}
+\lhead{}
+\chead{}
+%\rhead{}
+\cfoot{\thepage\ of \pageref{LastPage}}
+\rfoot{Version 8.3}
+
+
+
+
+\RequirePackage{etex} 
+
+
+%--- The documentation for the title can be found at: https://en.wikibooks.org/wiki/LaTeX/Title_Creation
+\title{Information Security \\ Public Key Infrastructure}
+\author{Ahmed U. Ashraf}
+\date{\today }
+% \subtitle{Version~\version}
+
+\begin{document}
+
+% \include{glossary}
+
+
+\maketitle
+%--- we would like to hyperlink each item in contensts page
+% \let\hypercontentsline=\contentsline
+% \renewcommand{\contentsline}[4]{\hypertarget{toc.#4}{}\hypercontentsline{#1}{#2}{#3}{#4}}
+%--- We print ToC: Table of Contents
+
+\DeclareFontShape{U}{stmry}{b}{n}{<-> ssub * stmry/m/n}{}
+
+\tableofcontents\label{toc}
+%--- We print the list of figures, this might go at the end.
+
+
+
+
+% \listoffigures
+% %--- We print the list of tables, this might also go at the end.
+% \listoftables
+% %--- This is to add list of symbols as glossary
+% % \printunsrtglossary[type=symbols,style=long,title={List of Symbols}]
+
+
+% % List of Algorithms (- taken the idea from Discrete Algorithmic Mathematics by Stephen B.Maurer and ANthony Ralston.pdf)
+
+% \listofalgorithms
+% \addcontentsline{toc}{chapter}{List of Algorithms}
+
+% \listofflowcharts
+% %\addcontentsline{toc}{chapter}{List of Flowcharts}
+
+
+
+
+
+
+
+\chapter{Introduction}
+
+Public-key cryptography is a cryptographic technique that enables entities to securely communicate on an insecure public network, and reliably verify the identity of an entity via digital signatures. A \emph{public key infrastructure}\footnote{This includes Hardware, software and policies.} (PKI) is a system for the creation, storage, management, distribution and revokation of public keys and digital certificates, which are used to verify that a particular public key belongs to a certain entity. The PKI creates digital certificates that map public keys to entities, securely stores these certificates in a central repository and revokes them if needed. PKI consists of
+\begin{enumerate}
+    \item A \emph{certificate authority} (CA) which stores, issues, and signs digital certificates.
+    \item A \emph{registration authority} (RA) which verifies the identity of entities requesting their digital certificates to be stored at the CA.
+    \item A \emph{central directory}, a secure location in which keys are stored and indexed.
+    \item A \emph{certificate management system}, which manages things like the access to stored certificates or the delivery of the certificates to be issued;
+    \item A \emph{certificate policy}, which states the PKI's requirements concerning its procedures. Its purpose is to allow outsiders to analyze the PKI's trustworthiness.
+\end{enumerate}
+
+
+\section{Digital certificates}
+
+Certificates are designed to bind a subject to the subject's public key. These certificates should be digitally signed by another entity called \emph{Certificate Authority} (CA).
+
+\begin{example}
+    OpenSSL, Let's Encrypt are examples of CA.
+\end{example}
+
+
+In order to get the certificate from the server \emph{google.com} of the host \emph{google.com}.
+\begin{lstlisting}[style=darkbash, language=bash]
+echo | \
+openssl s_client \
+-connect google.com:443 \
+-servername google.com | \
+openssl x509 \
+-outform PEM \
+> google_cert.pem
+\end{lstlisting}
+
+
+What does X.509 certificate contains:
+\begin{table}[H]
+    \begin{tabular}{|c|c|} \hline \\
+        Version & $\texttt{3 (0x2)}$\\ \hline 
+        Serial Number & $\texttt{\tiny 13:9c:df:29:a8:b5:bc:52:12:41:3e:ee:af:d1:8c:be}$ \\ \hline 
+        Signature Algorithm & $\texttt{sha256WithRSAEncryption}$ \\ \hline 
+        Issuer &  C=US, O=Google Trust Services, CN=WR2 \\
+        Validity & \\
+        Not Before & May 25 08:36:19 2026 \\
+        Not After & Aug 17 08:36:18 2026 \\
+        Subject & CN=*.google.com \\
+        Subject Public Key Info &  \\
+        Public Key Algorithm &  id-ecPublicKey \\
+        NIST CURVE &  P-256 \\
+        Public-Key & (256 bit) \\
+    \end{tabular}
+\end{table}
+
+\section{Certificate Signing Requests (CSRs)}
+
+
+
+
+
+
+
+
+
+
+
+
+% \chapter{References}
+
+%-- Computation Engineering by Ganesh Gopalakrishnan
+
+\cite{adamson2012set}
+
+% \nocite{*}
+
+
+
+\bibliography{references}
+\bibliographystyle{amsalpha}
+
+\printindex
+
+
+
+
+\end{document}
