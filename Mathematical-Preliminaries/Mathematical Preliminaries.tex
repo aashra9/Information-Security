@@ -301,12 +301,29 @@ print(sieve_of_eratosthenes(30))
 
 \section{Prime Numbers}
 The problem to decide whether a given number is a prime has been studied comprehensively. 
+Let
+\begin{align}
+    \pi(x) &\defn \#\bigg\{ p~\text{prime}: p \leq x\bigg\}
+\end{align}
+There is the following famous result on the distribution of primes. It is called the Prime Number Theorem and was proven by Hadamard and
+de la Vall\'ee Poussin.
 \begin{theorem}
     (The Prime Number Theorem) 
     \begin{align}
         \lim_{x \rightarrow \infty} \pi(x) \frac{\ln(x)}{x} = 1
     \end{align}
 \end{theorem}
+
+In other words, for large number $x$, we have 
+\begin{align}
+    \pi(x) \approx \frac{x}{\ln(x)}
+\end{align}
+The following is corollary of the Prime Number Theorem.
+
+
+\begin{corollary}
+    The frequency of primes among the numbers in the magnitude of $x$ is approximately  $\dfrac{1}{\ln(x)}$.
+\end{corollary}
 
 
 \begin{theorem}
