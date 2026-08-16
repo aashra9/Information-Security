@@ -1,0 +1,11 @@
+name = "Lean-Files"
+version = "0.1.0"
+defaultTargets = ["lean-files"]
+
+[[lean_lib]]
+name = "LeanFiles"
+
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"

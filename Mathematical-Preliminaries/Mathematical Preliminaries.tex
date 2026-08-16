@@ -219,6 +219,17 @@ The number 1 is (by definition) not considered prime. The number 2 is the only e
 \begin{theorem}
     There are infinitely many primes.
 \end{theorem}
+\begin{proof}
+    Assume that there are only a finite number of primes 
+    \begin{align}
+        p_1, p_2, \ldots, p_\ell
+    \end{align}
+    Let
+    \begin{align}
+        n = p_1 p_2 \cdots p_\ell + 1
+    \end{align}
+    Then $p_i$ does not divide $n$, for all $1 \leq i \leq \ell$. Thus, either $n$ is a prime or it contains a new prime factor diﬀerent from $p_i$, $1 \leq i \leq \ell$. This is a contradiction.
+\end{proof}
 
 
 \begin{algorithm}[H]
@@ -288,7 +299,8 @@ print(sieve_of_eratosthenes(30))
 \end{minted}
 
 
-\section{Prime Number Theorem}
+\section{Prime Numbers}
+The problem to decide whether a given number is a prime has been studied comprehensively. 
 \begin{theorem}
     (The Prime Number Theorem) 
     \begin{align}
@@ -404,6 +416,16 @@ Page 89 of \cite{rubinstein2018cryptography}.
 \end{definition}
 
 
+In 1922, the American mathematician, Robert Carmichael conjectured that
+there are infinitely many Carmichael numbers. This was proved some seventy
+years later by Alford, Granville, and Pomerance.
+
+\begin{theorem}
+    (Alford-Granville-Pomerance). The set of Carmichael numbers is infinite.
+\end{theorem}
+% W.R. Alford, A. Granville, and C. Pomerance, There are infinitely many Carmichael numbers, Annals of Mathematics 140 (1994), 703–722.
+
+
 
 \section{Euler's Totient Function}
 \begin{definition}
@@ -446,7 +468,123 @@ Page 89 of \cite{rubinstein2018cryptography}.
 \end{proof}
 
 
+\section{Legendre and Jacobi symbols}
+Suppose $p$ is an odd prime and $a$ is an integer. The number $a$ is defined to be a \emph{quadratic residue modulo $p$} iff 
+\begin{align}
+    a \not\equiv 0 \pmod{p}
+\end{align}
+and 
+\begin{align}
+    x^2 \equiv a \pmod{p}
+\end{align}
+has a solution $x \in \mathbb{Z}_p$. The number $a$ is defined to be a \emph{quadratic non-residue modulo $p$} iff
+\begin{align}
+    a \not\equiv 0 \pmod{p}
+\end{align}
+and $a$ is not a quadratic residue modulo $p$.
+
 \section{Primality testing}
+% ref: Cryptography by Simon Rubinstein-Salzedo.pdf
+
+RSA and other public key algorithms require large random prime numbers. The Prime
+Number Theorem tells us that the asymptotic density of primes among the first $N$
+integer numbers is $\dfrac{1}{\ln(N)}$. Fortunately, the density only decreases logarithmically.
+
+\begin{example}
+    The density is small, but not too small, since $\ln(x)$ increases slowly. For example, the density of primes among odd random numbers less than 22048 is approximately $\dfrac{2}{2048\ln(2)} \approx 0.0014$. The expected number of trials is $\dfrac{1}{0.0014} \approx 710$.
+\end{example}
+
+Given a number $N$ , how can we tell whether it is prime? One way of doing this is to divide it by all the numbers less than $N$ and see if it is exactly divisible by any of them. Or, we can be a little bit smarter: if $n$ factors as $N = ab$, then either $a$ or $b$ must be at most $\sqrt{N}$ , so we really only have to divide by numbers up to $\sqrt{N}$. This involves $O(\sqrt{N})$ steps. However, recall that $N$ only has $n = O(log(N ))$ digits, so $N = O(10^n)$. Hence, this algorithm for primality testing runs in $O(\sqrt{10^n})$ steps. Except not quite, because each ``step'' is a division, which itself requires something like $O(n^2)$ steps. Thus, overall, this algorithm for primality testing runs in $O(\sqrt{10^n} \times n^2)$ steps.
+
+However, there are much faster algorithms for primality testing. The best provable algorithm is due to Agrawal, Kayal, and Saxena (\emph{AKS algorithm}), which in its
+original form runs in $O(n^{12+\epsilon})$ steps, and more recent modifications have brought it down to $O(n^{6+\epsilon})$ steps. There are other algorithms that seem to do better, but that are hard to prove. For example, the Miller-Rabin algorithm, which is a probabilistic algorithm (i.e., one that relies on choosing random numbers and thus doesn't work every single time but that usually does) that can be turned into a deterministic algorithm if we assume that the Generalized Riemann Hypothesis is true, runs in time $O(n^{4+\epsilon})$ steps. The elliptic curve primality test seems to run in $O(n^{4+\epsilon})$ steps, but we are not able to prove this. 
+
+
+
+% ref: RSA and Public Key Cryptography by Richard A.Molin
+
+There do not exist any practical primality tests that encompass the three
+desired properties of: 
+\begin{enumerate}
+    \item generality,
+    \item speed, and 
+    \item correctness.
+\end{enumerate}
+
+
+\subsection{Pepin's primality test}
+
+{\bf Pepin's primality test}\index{Pepin's primality test}: Let $F_n = 2^{2^n} + 1$ be the $n$-th Fermat number. The Fermat's number $F_n$ is prime if and only if 
+\begin{align}
+3^{\frac{F_n - 1}{2}} \equiv - 1 \pmod{F_n}    
+\end{align}
+
+
+\subsection{Fermat Test}
+
+In the 17th century, Pierre de Fermat proved the Fermat's Little Theorem, which can be turned into a simple primality testing algorithm.
+Fermat's Little Theorem states that for any prime number $p$ and any number a not
+divisible by $p$, the equivalence 
+\begin{align}
+    a^{p-1} \equiv \pmod{p}
+\end{align}
+must hold. Consequently, one can test the primality—or rather the compositeness—of $n$ by randomly choosing a value for $a$ (not divisible by $n$) and computing $a^{n-1} \pmod{n}$. If this value is not equal to 1, then $n$ is definitively not a prime (and we have found a witness for the compositeness of $n$, respectively). Unfortunately, the converse is not true and finding an $a$ for which $a^{n-1} \pmod{n}$ does not imply that $n$ is prime. In fact, there is an entire class of composite numbers for which $a^{n-1} \pmod{n}$ holds Pierre de Fermat was a French mathematician who lived from 1607 to 1665. For this reason, the Fermat test (and the two other tests mentioned later) is referred to as a compositeness test. Contemporary Cryptography for all a. These numbers are called Carmichael numbers. Because it is not able to correctly handle Carmichael numbers, the Fermat test is not widely deployed in practice. Instead, either the Solovay-Strassen test or the Miller-Rabin test is used.
+
+\subsection{Solovay-Strassen test}
+
+The Solovay-Strassen test is a probabilistic compositeness testing algorithm that was developed by Robert Solovay and Volker Strassen in 1976. It can prove the compositeness of a large number n with certainty, but it can prove the primality of $n$ only with a certain probability.
+
+\subsection{Miller-Rabin test}
+
+
+\begin{proposition}
+    Let $n \in \mathbb{N}$ be odd and let $1 \leq a < n$ be an integer. If $\gcd(a, n) \neq 1$, then $n$ is composite. Otherwise, write
+    \begin{align}
+        n-1 &= 2^\ell m
+    \end{align}
+    with $k \in \mathbb{N}$ being maximal. If $n$ is prime, then exactly one of the following holds:
+    \begin{enumerate}
+        \item \begin{align}
+        a^m \equiv \pm 1 \pmod{n}
+    \end{align}
+        \item there exists an integer $k \in \{1, \ldots, \ell-1\}$ such that
+    \begin{align}
+        a^{2^k m} \equiv -1 \pmod{n}
+    \end{align}
+    \end{enumerate}
+\end{proposition}
+
+If the Miller-Rabin algorithm outputs that a number is composite, this result must
+be correct. However, there are bases $a$ such that a composite number $n$ is incorrectly identified as a prime in a run of the Miller-Rabin test.
+
+\begin{algorithm}
+\caption{Miller-Rabin Algorithm with $k$ runs}
+\textbf{Input:} $n \in \mathbb{N}, k \in \mathbb{N}$ \\
+\textbf{Output:} '$n$ is probably prime' or '$n$ is composite'
+\begin{algorithmic}[1]
+\FOR{$i = 1$ \TO $k$}
+    \STATE $a \leftarrow^{\$} \{1, 2, \dots, n - 1\}$ \COMMENT{choose a uniform random base $a$.}
+    \IF{$\gcd(a, n) \neq 1$}
+        \STATE \textbf{return} '$n$ is composite'
+    \ENDIF
+    \STATE $y \equiv a^d \bmod n$
+    \IF{$y \equiv 1$ \textbf{or} $y \equiv -1$}
+        \STATE \textbf{do next} \COMMENT{$n$ could be a prime, test another base $a$.}
+    \ENDIF
+    \FOR{$r = 1$ \TO $s - 1$}
+        \STATE $y = y^2 \bmod n$
+        \IF{$y \equiv 1$}
+            \STATE \textbf{return} '$n$ is composite' \COMMENT{$n$ cannot be a prime, stop.}
+        \ENDIF
+        \IF{$y \equiv -1$}
+            \STATE \textbf{do next} \COMMENT{$n$ could be a prime, test another base $a$.}
+        \ENDIF
+    \ENDFOR
+    \STATE \textbf{return} '$n$ is composite' \COMMENT{$n$ cannot be a prime, stop.}
+\ENDFOR
+\STATE \textbf{return} '$n$ is probably prime'
+\end{algorithmic}
+\end{algorithm}
 
 \chapter{Polynomials}
 \section{Ring of polynomials}
