@@ -1,7 +1,7 @@
 \documentclass[a4paper, 12pt]{book} % changed from scrbook
 % not using \documentclass[a4paper, twoside=semi]{scrreprt} anymore
 
-\usepackage{../Style-Files/InfoSec}
+\usepackage{../Files/Style/InfoSec}
 \usepackage{algorithmic}
 
 
@@ -137,7 +137,7 @@
 
 
 \chapter{Integers}
-
+\label{ch:integers}
 References are \cite{slinko2015algebra, childs2019cryptology,silverman2008introduction, shemanske2017modern}
 
 
@@ -158,7 +158,7 @@ The integer $q$ is called the \emph{quotient}\index{quotient} in this setting.
     \end{enumerate}
 \end{theorem}
 
-Any integer $a$ is trivially divisible by ˙$1$ and by $a$. If an integer $p > 1$  has only these trivial divisors it is called \emph{prime}\index{prime}\footnote{Note that we don't allow \emph{negative} primes.}, otherwise it is called \emph{composite}\index{composite}. The first  primes are 
+Any integer $a$ is trivially divisible by $1$ and by $a$. If an integer $p > 1$  has only these trivial divisors it is called \emph{prime}\index{prime}\footnote{Note that we don't allow \emph{negative} primes.}, otherwise it is called \emph{composite}\index{composite}. The first  primes are 
 \begin{align}
     2, 3, 5, 7, 11, 13, \ldots
 \end{align}
@@ -179,25 +179,20 @@ The number 1 is (by definition) not considered prime. The number 2 is the only e
         \item $d$ divides $a$ and $b$, and
         \item if an integer $c$ divides $a$ and $b$, then $c$ must divide $d$.
     \end{enumerate}
-    If $gcd(a, b) = 1$, we say that $a$ and $b$ are \emph{relatively prime}\index{relatively prime}.
+    If $\gcd(a, b) = 1$, we say that $a$ and $b$ are \emph{relatively prime}\index{relatively prime}.
 \end{definition}
 
 
 \begin{theorem}
     (\emph{Bezout's identity}\index{Bezout's identity}) If $a, b \in \mathbb{Z}$, then
     \begin{align}
-        \gcd(a, b) = na + mb
+        \gcd(a, b) = sa + tb
     \end{align} 
-    for some integers $a, b \in \mathbb{Z}$. Moreover, $\gcd(a, b)$ is the smallest positive integer which is an integer linear combination $na + mb$ of $a$ and $b$.
+    for some integers $s, t \in \mathbb{Z}$. Moreover, $\gcd(a, b)$ is the smallest positive integer which is an integer linear combination $sa + tb$ of $a$ and $b$.
 \end{theorem}
 
 
 \section{Fundamental Theorem of Arithmetic}
-
-
-\begin{definition}
-    An integer $p$ is called a prime if $p > 1$ and if the only positive integers dividing $p$ are $1$ and $p$.
-\end{definition}
 
 
 \begin{lemma}
@@ -542,10 +537,10 @@ desired properties of:
 In the 17th century, Pierre de Fermat proved the Fermat's Little Theorem, which can be turned into a simple primality testing algorithm.
 Fermat's Little Theorem states that for any prime number $p$ and any number a not
 divisible by $p$, the equivalence 
-\begin{align}
-    a^{p-1} \equiv \pmod{p}
-\end{align}
-must hold. Consequently, one can test the primality—or rather the compositeness—of $n$ by randomly choosing a value for $a$ (not divisible by $n$) and computing $a^{n-1} \pmod{n}$. If this value is not equal to 1, then $n$ is definitively not a prime (and we have found a witness for the compositeness of $n$, respectively). Unfortunately, the converse is not true and finding an $a$ for which $a^{n-1} \pmod{n}$ does not imply that $n$ is prime. In fact, there is an entire class of composite numbers for which $a^{n-1} \pmod{n}$ holds Pierre de Fermat was a French mathematician who lived from 1607 to 1665. For this reason, the Fermat test (and the two other tests mentioned later) is referred to as a compositeness test. Contemporary Cryptography for all a. These numbers are called Carmichael numbers. Because it is not able to correctly handle Carmichael numbers, the Fermat test is not widely deployed in practice. Instead, either the Solovay-Strassen test or the Miller-Rabin test is used.
+    \begin{align}
+        a^{p-1} \equiv 1 \pmod{p}
+    \end{align}
+must hold. Consequently, one can test the primality---or rather the compositeness---of $n$ by randomly choosing a value for $a$ (not divisible by $n$) and computing $a^{n-1} \pmod{n}$. If this value is not equal to 1, then $n$ is definitively not a prime (and we have found a witness for the compositeness of $n$, respectively). Unfortunately, the converse is not true: finding an $a$ for which $a^{n-1} \equiv 1 \pmod{n}$ does not imply that $n$ is prime. In fact, there is an entire class of composite numbers for which $a^{n-1} \equiv 1 \pmod{n}$ holds for all $a$ with $\gcd(a, n) = 1$. These numbers are called \emph{Carmichael numbers}. Because the Fermat test is not able to correctly handle Carmichael numbers, it is not widely deployed in practice. Instead, either the Solovay-Strassen test or the Miller-Rabin test is used.
 
 \subsection{Solovay-Strassen test}
 
@@ -559,7 +554,7 @@ The Solovay-Strassen test is a probabilistic compositeness testing algorithm tha
     \begin{align}
         n-1 &= 2^\ell m
     \end{align}
-    with $k \in \mathbb{N}$ being maximal. If $n$ is prime, then exactly one of the following holds:
+    with $m$ odd. If $n$ is prime, then exactly one of the following holds:
     \begin{enumerate}
         \item \begin{align}
         a^m \equiv \pm 1 \pmod{n}
@@ -579,16 +574,17 @@ be correct. However, there are bases $a$ such that a composite number $n$ is inc
 \textbf{Input:} $n \in \mathbb{N}, k \in \mathbb{N}$ \\
 \textbf{Output:} '$n$ is probably prime' or '$n$ is composite'
 \begin{algorithmic}[1]
+\STATE Write $n - 1 = 2^\ell m$ with $m$ odd
 \FOR{$i = 1$ \TO $k$}
     \STATE $a \leftarrow^{\$} \{1, 2, \dots, n - 1\}$ \COMMENT{choose a uniform random base $a$.}
     \IF{$\gcd(a, n) \neq 1$}
         \STATE \textbf{return} '$n$ is composite'
     \ENDIF
-    \STATE $y \equiv a^d \bmod n$
+    \STATE $y \equiv a^m \bmod n$
     \IF{$y \equiv 1$ \textbf{or} $y \equiv -1$}
         \STATE \textbf{do next} \COMMENT{$n$ could be a prime, test another base $a$.}
     \ENDIF
-    \FOR{$r = 1$ \TO $s - 1$}
+    \FOR{$r = 1$ \TO $\ell - 1$}
         \STATE $y = y^2 \bmod n$
         \IF{$y \equiv 1$}
             \STATE \textbf{return} '$n$ is composite' \COMMENT{$n$ cannot be a prime, stop.}
@@ -603,50 +599,428 @@ be correct. However, there are bases $a$ such that a composite number $n$ is inc
 \end{algorithmic}
 \end{algorithm}
 
+\begin{theorem}
+    (Monier-Rabin). Let $N$ be an odd composite integer. The probability that a random integer $a \in [1, N -1]$ is a witness for $N$ is at least $\dfrac{3}{4}$.
+\end{theorem}
+
 \chapter{Polynomials}
+
+Polynomials over finite fields play a central role in modern cryptography.
+They appear in the construction of finite fields (see Chapter~\ref{ch:fields}), in
+error-correcting codes (see Chapter~\ref{ch:codes}), and in the design of
+cryptosystems based on the hardness of factoring polynomials, such as the NTRU
+cryptosystem. In this chapter, we develop the algebraic theory of polynomials
+needed in the remainder of this document.
+
 \section{Ring of polynomials}
-\section{Division algorithm}
-\section{Lagrange's Interpolation}
 
+\begin{definition}
+    Let $\Bbbk$ be a commutative ring\footnote{Of primary interest to us will be the case where $\Bbbk$ is a field, such as $\mathbb{Q}$, $\mathbb{Z}_p$ for a prime $p$, or a finite field $\mathbb{F}_{p^n}$.}. The \emph{ring of polynomials}\index{ring of polynomials} over $\Bbbk$ in the indeterminate $x$, denoted $\Bbbk[x]$, is the set
+    \begin{align}
+        \Bbbk[x] &\defn \bigg\{ \sum_{i=0}^{n} a_i x^i : n \geq 0, ~a_i \in \Bbbk \bigg\}
+    \end{align}
+    equipped with the usual operations of polynomial addition and multiplication. An element $f(x) = \sum_{i=0}^{n} a_i x^i \in \Bbbk[x]$ is called a \emph{polynomial}\index{polynomial} with \emph{coefficients}\index{coefficient} $a_0, a_1, \ldots, a_n$ in $\Bbbk$.
+\end{definition}
 
-\chapter{Groups}
-
+\begin{definition}
+    Let $f(x) = \sum_{i=0}^{n} a_i x^i \in \Bbbk[x]$ be a non-zero polynomial. The \emph{degree}\index{degree} of $f$, denoted $\deg(f)$, is the largest integer $n$ such that $a_n \neq 0$. The coefficient $a_n$ is called the \emph{leading coefficient}\index{leading coefficient} of $f$. If the leading coefficient is $1$, then $f$ is said to be \emph{monic}\index{monic polynomial}. The zero polynomial is said to have degree $-\infty$.
+\end{definition}
 
 \begin{proposition}
-    Let $G$ is a finite group, $g \in G$, $k \in \mathbb{Z}$ is an integer, then
-    \begin{align}
-        o(g^k) &= \frac{o(g)}{(k, o(g))}
-    \end{align}
-    where the denominator is the greatest common divisor of $k$ and $o(g)$.
+    Let $\Bbbk$ be an integral domain and let $f, g \in \Bbbk[x]$ be non-zero polynomials. Then
+    \begin{enumerate}
+        \item $\deg(f + g) \leq \max\{\deg(f), \deg(g)\}$, and
+        \item $\deg(fg) = \deg(f) + \deg(g)$.
+    \end{enumerate}
+    In particular, $\Bbbk[x]$ is an integral domain whenever $\Bbbk$ is.
 \end{proposition}
+
+\begin{example}
+    In $\mathbb{Z}_2[x]$, we have
+    \begin{align}
+        (x^3 + x + 1) + (x^2 + x) &= x^3 + x^2 + 1, \\
+        (x^3 + x + 1)(x + 1) &= x^4 + x^3 + x^2 + 1.
+    \end{align}
+    Note that since $2 \equiv 0 \pmod 2$, all coefficients are reduced modulo $2$.
+\end{example}
+
+\begin{definition}
+    A non-constant polynomial $f(x) \in \Bbbk[x]$ is said to be \emph{irreducible}\index{irreducible polynomial} over $\Bbbk$ if it cannot be written as a product $f(x) = g(x)h(x)$ of two non-constant polynomials $g, h \in \Bbbk[x]$. Otherwise, $f$ is said to be \emph{reducible}\index{reducible polynomial}.
+\end{definition}
+
+\begin{remark}
+    Irreducibility depends critically on the coefficient field. For instance, $f(x) = x^2 + 1$ is irreducible over $\mathbb{R}$ and over $\mathbb{Z}_3$, but it factors as $x^2 + 1 = (x + i)(x - i)$ over $\mathbb{C}$, and as $(x + 1)^2$ over $\mathbb{Z}_2$.
+\end{remark}
+
+\section{Division algorithm}
+
+\begin{theorem}
+    (\emph{Division algorithm for polynomials}) Let $f, g \in \Bbbk[x]$ with $g \neq 0$ and $\deg(g) \geq 1$. Then there exist unique polynomials $q, r \in \Bbbk[x]$ such that
+    \begin{align}
+        f(x) = q(x) g(x) + r(x)
+    \end{align}
+    with either $r = 0$ or $\deg(r) < \deg(g)$. The polynomial $q$ is called the \emph{quotient} and $r$ is called the \emph{remainder}.
+\end{theorem}
+
 \begin{proof}
-    Page 198 of \cite{zheng2022modern}.
+    If $\deg(f) < \deg(g)$, then take $q = 0$ and $r = f$. Otherwise, let $n = \deg(f)$, $m = \deg(g)$, with leading coefficients $a_n$ and $b_m$, respectively. Set
+    \begin{align}
+        f_1(x) = f(x) - \frac{a_n}{b_m} x^{n-m} g(x)
+    \end{align}
+    Then $\deg(f_1) < \deg(f)$. By induction on $\deg(f)$, we may write $f_1 = q_1 g + r$ with $\deg(r) < \deg(g)$ or $r = 0$. Hence
+    \begin{align}
+        f(x) = \bigg( q_1(x) + \frac{a_n}{b_m} x^{n-m} \bigg) g(x) + r(x)
+    \end{align}
+    which gives the desired decomposition with $q = q_1 + \frac{a_n}{b_m} x^{n-m}$. Uniqueness follows from the observation that if $fg + r = q'g + r'$ with both remainders of degree less than $\deg(g)$, then $(q - q')g = r' - r$, and degree considerations force $q = q'$ and $r = r'$.
 \end{proof}
 
 \begin{proposition}
-    Suppose $G$ is a finite Abelian group, $a,b \in G$, and $(o(a),o(b))= 1$, then
+    (\emph{Remainder theorem}) If $f(x) \in \Bbbk[x]$ and $\alpha \in \Bbbk$, then the remainder upon dividing $f(x)$ by $(x - \alpha)$ is exactly $f(\alpha)$. Consequently, $(x - \alpha)$ divides $f(x)$ if and only if $f(\alpha) = 0$.
+\end{proposition}
+
+\begin{proof}
+    By the division algorithm, $f(x) = q(x)(x - \alpha) + r(x)$ where $\deg(r) < 1$, so $r$ is a constant. Evaluating both sides at $x = \alpha$ gives $f(\alpha) = r$, proving the claim.
+\end{proof}
+
+\begin{definition}
+    If $f(x) \in \Bbbk[x]$ and $\alpha \in \Bbbk$ is such that $f(\alpha) = 0$, then $\alpha$ is called a \emph{root}\index{root of a polynomial} (or \emph{zero}) of $f$.
+\end{definition}
+
+\begin{theorem}
+    (\emph{Fundamental Theorem of Algebra / number of roots}) Let $\Bbbk$ be a field and let $f(x) \in \Bbbk[x]$ be a non-zero polynomial of degree $n$. Then $f$ has at most $n$ roots in $\Bbbk$, counted with multiplicity.
+\end{theorem}
+
+\begin{proof}
+    We induct on $n = \deg(f)$. For $n = 0$, $f$ is a non-zero constant and has no roots. Assume the result holds for all polynomials of degree less than $n$. If $f$ has no roots in $\Bbbk$, we are done. Otherwise, let $\alpha$ be a root. By the remainder theorem, $f(x) = (x - \alpha) q(x)$ for some $q \in \Bbbk[x]$ with $\deg(q) = n - 1$. By the induction hypothesis, $q$ has at most $n - 1$ roots, so $f$ has at most $n$ roots.
+\end{proof}
+
+\begin{corollary}
+    Let $\Bbbk$ be a field. A polynomial $f(x) \in \Bbbk[x]$ of degree $n$ with more than $n$ roots in $\Bbbk$ must be the zero polynomial. In particular, if two polynomials $f, g \in \Bbbk[x]$ of degree at most $n$ agree on more than $n$ points, then $f = g$.
+\end{corollary}
+
+\begin{theorem}
+    (\emph{Euclidean algorithm for polynomials}) Given $f, g \in \Bbbk[x]$ not both zero, there exists a unique monic polynomial $d(x) = \gcd(f(x), g(x))$, called the \emph{greatest common divisor}\index{greatest common divisor!of polynomials} of $f$ and $g$, such that:
+    \begin{enumerate}
+        \item $d$ divides both $f$ and $g$, and
+        \item any common divisor of $f$ and $g$ divides $d$.
+    \end{enumerate}
+    Moreover, there exist polynomials $s(x), t(x) \in \Bbbk[x]$ such that
+    \begin{align}
+        d(x) = s(x) f(x) + t(x) g(x)
+    \end{align}
+    which is the polynomial analogue of B\'ezout's identity.
+\end{theorem}
+
+\section{Lagrange's Interpolation}
+
+Polynomial interpolation is a fundamental tool in cryptography. It underlies
+\emph{Shamir's secret sharing scheme} and \emph{Rabin's information dispersal
+algorithm}. The basic problem is: given a set of points $(x_i, y_i)$ with distinct
+$x$-coordinates, find a polynomial of minimal degree passing through all of them.
+
+\begin{theorem}
+    (\emph{Lagrange interpolation theorem}) Let $\Bbbk$ be a field and let $x_1, x_2, \ldots, x_{n+1}$ be $n+1$ distinct elements of $\Bbbk$, and let $y_1, y_2, \ldots, y_{n+1}$ be arbitrary elements of $\Bbbk$ (not necessarily distinct). Then there exists a unique polynomial $f(x) \in \Bbbk[x]$ of degree at most $n$ such that
+    \begin{align}
+        f(x_i) = y_i, \quad \text{for all } i = 1, 2, \ldots, n+1.
+    \end{align}
+    Explicitly,
+    \begin{align}
+        f(x) = \sum_{i=1}^{n+1} y_i L_i(x)
+    \end{align}
+    where the \emph{Lagrange basis polynomials}\index{Lagrange basis polynomial} $L_i(x)$ are given by
+    \begin{align}
+        L_i(x) &= \prod_{\substack{j = 1 \\ j \neq i}}^{n+1} \frac{x - x_j}{x_i - x_j}
+    \end{align}
+    Each $L_i$ has degree $n$, satisfies $L_i(x_i) = 1$, and $L_i(x_j) = 0$ for $j \neq i$.
+\end{theorem}
+
+\begin{proof}
+    \emph{(Existence)}. Define $f$ as in the statement. Since each $L_i$ has degree $n$, the sum has degree at most $n$. Moreover, for any fixed $i$,
+    \begin{align}
+        f(x_i) = \sum_{j=1}^{n+1} y_j L_j(x_i) = y_i L_i(x_i) = y_i
+    \end{align}
+    because $L_j(x_i) = 0$ for $j \neq i$.
+    
+    \emph{(Uniqueness)}. Suppose $f$ and $g$ both have degree at most $n$ and satisfy $f(x_i) = g(x_i) = y_i$ for $i = 1, \ldots, n+1$. Then $h = f - g$ has degree at most $n$ and has the $n+1$ distinct roots $x_1, \ldots, x_{n+1}$. By the theorem on the number of roots, $h$ must be the zero polynomial, so $f = g$.
+\end{proof}
+
+\begin{example}
+    (\emph{Shamir's secret sharing}) Suppose we wish to split a secret $s \in \mathbb{Z}_p$ into $n$ shares so that any $k$ of them reconstruct $s$, but any $k-1$ reveal nothing about $s$. We choose a polynomial
+    \begin{align}
+        f(x) = s + a_1 x + a_2 x^2 + \cdots + a_{k-1} x^{k-1}
+    \end{align}
+    of degree at most $k - 1$ with random coefficients $a_i \in \mathbb{Z}_p$. The $i$-th share is the point $(i, f(i))$ for $i = 1, \ldots, n$. Given any $k$ shares, Lagrange interpolation recovers $f(x)$, and hence the secret $s = f(0)$. With fewer than $k$ shares, infinitely many polynomials pass through the given points, so no information about $s$ is revealed.
+\end{example}
+
+\begin{example}
+    Find the polynomial of degree at most 2 through the points $(0, 1)$, $(1, 3)$, and $(2, 7)$ over $\mathbb{Q}$. The Lagrange basis polynomials are
+    \begin{align}
+        L_1(x) &= \frac{(x-1)(x-2)}{(0-1)(0-2)} = \frac{(x-1)(x-2)}{2}, \\
+        L_2(x) &= \frac{(x-0)(x-2)}{(1-0)(1-2)} = -x(x-2), \\
+        L_3(x) &= \frac{(x-0)(x-1)}{(2-0)(2-1)} = \frac{x(x-1)}{2}.
+    \end{align}
+    Hence
+    \begin{align}
+        f(x) &= 1 \cdot L_1(x) + 3 \cdot L_2(x) + 7 \cdot L_3(x) \\
+        &= \frac{(x-1)(x-2)}{2} - 3x(x-2) + \frac{7x(x-1)}{2} \\
+        &= x^2 + x + 1.
+    \end{align}
+    Indeed, $f(0) = 1$, $f(1) = 3$, and $f(2) = 7$ as required.
+\end{example}
+
+Here is a Python implementation of Lagrange interpolation over the field $\mathbb{Z}_p$:
+\begin{minted}{python}
+def lagrange_interpolate(points, x, p):
+    """Evaluate the interpolating polynomial at x over Z_p.
+    points: list of (x_i, y_i) tuples with distinct x_i."""
+
+    def modinv(a):
+        return pow(a, -1, p)
+
+    result = 0
+    for i, (xi, yi) in enumerate(points):
+        # Compute L_i(x)
+        num, den = 1, 1
+        for j, (xj, _) in enumerate(points):
+            if i != j:
+                num = num * (x - xj) % p
+                den = den * (xi - xj) % p
+        Li = num * modinv(den) % p
+        result = (result + yi * Li) % p
+    return result
+
+# Reconstruct secret from shares (Shamir's scheme, t=3)
+shares = [(1, 5), (2, 3), (3, 4)]  # (x_i, y_i), p=17
+secret = lagrange_interpolate(shares, 0, 17)
+print(f"Reconstructed secret: {secret}")
+\end{minted}
+
+
+\chapter{Groups}
+\label{ch:groups}
+
+Groups are the fundamental algebraic structures underlying modern cryptography.
+The discrete logarithm problem, upon which Diffie--Hellman key exchange and the
+ElGamal cryptosystem are built, is posed in certain groups with desirable
+arithmetic properties. In this chapter, we develop the elementary theory of
+groups, with a particular focus on cyclic groups and the multiplicative groups
+that arise in cryptographic applications.
+
+\section{Basic definitions}
+
+\begin{definition}
+    A \emph{group}\index{group} $(G, \cdot)$ is a set $G$ together with a binary operation
+    \begin{align}
+        \cdot: G \times G \longrightarrow G
+    \end{align}
+    satisfying the following axioms:
+    \begin{enumerate}
+        \item \emph{Associativity}: $(a \cdot b) \cdot c = a \cdot (b \cdot c)$ for all $a, b, c \in G$.
+        \item \emph{Identity element}: There exists an element $e \in G$ such that $e \cdot a = a \cdot e = a$ for all $a \in G$.
+        \item \emph{Inverses}: For each $a \in G$, there exists an element $a^{-1} \in G$ such that $a \cdot a^{-1} = a^{-1} \cdot a = e$.
+    \end{enumerate}
+    If in addition $a \cdot b = b \cdot a$ for all $a, b \in G$, then $G$ is called an \emph{Abelian}\index{Abelian group} (or \emph{commutative}) group.
+\end{definition}
+
+\begin{example}
+    The following are groups:
+    \begin{enumerate}
+        \item $(\mathbb{Z}, +)$, the integers under addition, is an infinite cyclic Abelian group with identity $0$.
+        \item $(\mathbb{Z}_n, +)$, the integers modulo $n$ under addition, is a finite cyclic group of order $n$.
+        \item $(\mathbb{Z}_n^\times, \cdot)$, the units modulo $n$ under multiplication, is a finite Abelian group of order $\varphi(n)$.
+        \item $(\mathbb{R}^\times, \cdot)$, the non-zero real numbers under multiplication.
+        \item $(\mathbb{F}_p^\times, \cdot)$, the multiplicative group of a finite field, is cyclic (see Chapter~\ref{ch:fields}).
+    \end{enumerate}
+\end{example}
+
+\begin{definition}
+    A subset $H \subseteq G$ is called a \emph{subgroup}\index{subgroup} of $G$, written $H \leq G$, if $H$ is itself a group under the operation of $G$.
+\end{definition}
+
+\begin{definition}
+    The \emph{order}\index{order} of a group $G$, denoted $|G|$ or $o(G)$, is the number of its elements. The \emph{order} of an element $g \in G$, denoted $o(g)$, is the smallest positive integer $k$ such that $g^k = e$; if no such $k$ exists, $g$ is said to have \emph{infinite order}.
+\end{definition}
+
+\begin{theorem}
+    (\emph{Lagrange's theorem}) If $G$ is a finite group and $H$ is a subgroup of $G$, then $|H|$ divides $|G|$. In particular, the order of every element $g \in G$ divides $|G|$.
+\end{theorem}
+
+\begin{proof}
+    Let $G$ act on the left cosets of $H$ by left multiplication. The cosets $gH$ partition $G$ into disjoint sets, each of cardinality $|H|$. If $k$ is the number of distinct cosets, then $|G| = k |H|$, so $|H|$ divides $|G|$. The statement about element orders follows by considering the cyclic subgroup $\langle g \rangle$ generated by $g$, which has order $o(g)$.
+\end{proof}
+
+\section{Cyclic groups}
+
+\begin{definition}
+    A group $G$ is \emph{cyclic}\index{cyclic group} if there exists an element $g \in G$ such that every element of $G$ can be written as a power $g^k$ for some $k \in \mathbb{Z}$. Such an element $g$ is called a \emph{generator}\index{generator} of $G$, and we write $G = \langle g \rangle$.
+\end{definition}
+
+\begin{theorem}
+    Every cyclic group is Abelian. Moreover, if $G = \langle g \rangle$ is cyclic of order $n$, then the elements of $G$ are precisely
+    \begin{align}
+        e, g, g^2, \ldots, g^{n-1}
+    \end{align}
+    and $g^k = e$ if and only if $n$ divides $k$.
+\end{theorem}
+
+\begin{proposition}
+    Let $G = \langle g \rangle$ be a cyclic group of order $n$. An element $g^k$ is a generator of $G$ if and only if $\gcd(k, n) = 1$. Consequently, a cyclic group of order $n$ has exactly $\varphi(n)$ generators.
+\end{proposition}
+
+\begin{proof}
+    The element $g^k$ generates $G$ if and only if $o(g^k) = n$. But by the first proposition in this chapter,
+    \begin{align}
+        o(g^k) = \frac{o(g)}{\gcd(k, o(g))} = \frac{n}{\gcd(k, n)}
+    \end{align}
+    So $o(g^k) = n$ if and only if $\gcd(k, n) = 1$. The number of such $k$ is exactly $\varphi(n)$.
+\end{proof}
+
+\begin{example}
+    The multiplicative group $\mathbb{Z}_7^\times = \{1, 2, 3, 4, 5, 6\}$ is cyclic of order $6$. The element $3$ is a generator:
+    \begin{align}
+        3^1 \equiv 3, \quad 3^2 \equiv 2, \quad 3^3 \equiv 6, \quad 3^4 \equiv 4, \quad 3^5 \equiv 5, \quad 3^6 \equiv 1 \pmod 7.
+    \end{align}
+    The generators are $3^k$ for $k$ coprime to $6$, i.e., $k = 1$ and $k = 5$, yielding $3$ and $3^5 = 5$ as the two generators of $\mathbb{Z}_7^\times$.
+\end{example}
+
+\begin{proposition}
+    Let $G$ is a finite group, $g \in G$, $k \in \mathbb{Z}$ an integer, then
+    \begin{align}
+        o(g^k) &= \frac{o(g)}{\gcd(k, o(g))}
+    \end{align}
+\end{proposition}
+\begin{proof}
+    Let $n = o(g)$ and $d = \gcd(k, n)$. Since $(g^k)^{n/d} = g^{kn/d} = (g^n)^{k/d} = e$, we have $o(g^k) \leq n/d$. Conversely, if $(g^k)^m = g^{km} = e$, then $n$ divides $km$, and since $\gcd(n/d, k/d) = 1$, we have $n/d$ divides $m$. Hence $o(g^k) = n/d$. See also page 198 of \cite{zheng2022modern}.
+\end{proof}
+
+\begin{proposition}
+    Suppose $G$ is a finite Abelian group, $a,b \in G$, and $\gcd(o(a), o(b)) = 1$, then
     \begin{align}
         o(ab) &= o(a) o(b)
     \end{align}
 \end{proposition}
 \begin{proof}
-    Page 198 of \cite{zheng2022modern}.
+    Let $m = o(a)$ and $n = o(b)$, with $\gcd(m, n) = 1$. Since $G$ is Abelian,
+    \begin{align}
+        (ab)^{mn} = (a^m)^n (b^n)^m = e \cdot e = e
+    \end{align}
+    so $o(ab) \leq mn$. Conversely, if $(ab)^\ell = e$, then $a^\ell = b^{-\ell}$. Raising to the power $n$ gives $a^{\ell n} = e$, so $m$ divides $\ell n$. Since $\gcd(m, n) = 1$, we have $m \mid \ell$. Similarly, $n \mid \ell$, and since $m, n$ are coprime, $mn \mid \ell$. Hence $o(ab) = mn$. See also page 198 of \cite{zheng2022modern}.
 \end{proof}
 
+\begin{definition}
+    Let $n$ be a positive integer. An element $g \in \mathbb{Z}_n^\times$ is called a \emph{primitive root}\index{primitive root} modulo $n$ if $g$ generates $\mathbb{Z}_n^\times$, that is, if $o(g) = \varphi(n)$.
+\end{definition}
 
 \begin{theorem}
-    (\emph{Existence of primitive root}) If and only if $n= 2, 4, p^k(k \geq 1)$ and $a = 2 p^k(k \geq 1)$ four cases, the primitive root of mod $n$ exists, where $p > 2$ is an odd prime.
+    (\emph{Existence of primitive roots}) A primitive root modulo $n$ exists if and only if $n \in \{2, 4, p^k, 2p^k\}$ where $p > 2$ is an odd prime and $k \geq 1$. In each of these cases, $\mathbb{Z}_n^\times$ is a cyclic group.
 \end{theorem}
 \begin{proof}
-    Page 199 of \cite{zheng2022modern}.
+    See page 199 of \cite{zheng2022modern}. The non-existence for other moduli follows from the structure theorem for finite Abelian groups: $\mathbb{Z}_n^\times$ is cyclic precisely in the four cases listed.
 \end{proof}
 
 \section{Permutation groups}
 
+\begin{definition}
+    Let $X$ be a finite set with $n$ elements. A \emph{permutation}\index{permutation} of $X$ is a bijection $\sigma: X \longrightarrow X$. The set of all permutations of $X$, together with function composition, forms a group called the \emph{symmetric group}\index{symmetric group}, denoted $S_n$. The order of $S_n$ is $n!$.
+\end{definition}
+
+\begin{definition}
+    A permutation that cyclically permutes a subset $\{a_1, a_2, \ldots, a_k\} \subseteq X$ and fixes all other elements is called a $k$-\emph{cycle}\index{cycle} and is denoted $(a_1~a_2~\cdots~a_k)$, meaning $a_i \mapsto a_{i+1}$ (with $a_k \mapsto a_1$). Every permutation can be decomposed uniquely (up to order) as a product of disjoint cycles.
+\end{definition}
+
+\begin{example}
+    The permutation $\sigma \in S_5$ given by the mapping
+    \begin{align}
+        1 \mapsto 3, \quad 2 \mapsto 5, \quad 3 \mapsto 1, \quad 4 \mapsto 4, \quad 5 \mapsto 2
+    \end{align}
+    can be written in cycle notation as
+    \begin{align}
+        \sigma = (1~3)(2~5)
+    \end{align}
+    where the fixed point $4$ is omitted.
+\end{example}
+
+\begin{theorem}
+    (\emph{Cayley's theorem}) Every group $G$ is isomorphic to a subgroup of a symmetric group. Specifically, $G$ is isomorphic to a subgroup of $S_{|G|}$.
+\end{theorem}
+
+\begin{proof}
+    For each $g \in G$, define the left translation map $L_g: G \longrightarrow G$ by $L_g(h) = gh$. Each $L_g$ is a bijection, hence a permutation of the set $G$. The map $g \mapsto L_g$ is an injective group homomorphism from $G$ into $\mathrm{Sym}(G) \cong S_{|G|}$, so $G$ embeds as a subgroup.
+\end{proof}
+
+\begin{remark}
+    Permutation groups are relevant in cryptography through the general linear group $\mathrm{GL}_n(\mathbb{F}_q)$ and its subgroups, which act as permutation groups on the vectors of $\mathbb{F}_q^n$. The security of certain post-quantum cryptosystems (e.g., code-based and some multivariate schemes) relies on the structure of such permutation groups.
+\end{remark}
+
 \section{Discrete logarithm}
+
+The discrete logarithm problem is the computational foundation of many
+public-key cryptosystems, including Diffie--Hellman key exchange, ElGamal
+encryption, and digital signature schemes such as DSA and ECDSA.
+
+\begin{definition}
+    Let $G$ be a finite cyclic group of order $n$ with generator $g$, written multiplicatively. Given $h \in G$, the \emph{discrete logarithm}\index{discrete logarithm} of $h$ to the base $g$, denoted $\log_g(h)$, is the unique integer $x$ with $0 \leq x < n$ such that
+    \begin{align}
+        g^x = h
+    \end{align}
+\end{definition}
+
+\begin{definition}
+    The \emph{Discrete Logarithm Problem} (DLP) is: given a finite cyclic group $G = \langle g \rangle$ and an element $h \in G$, compute $\log_g(h)$.
+\end{definition}
+
+\begin{remark}
+    Computing $g^x$ given $x$ (the \emph{exponentiation} problem) is efficiently solvable using the \emph{square-and-multiply} algorithm in $O(\log x)$ group multiplications. However, the reverse problem---recovering $x$ from $g^x$---is believed to be computationally infeasible in suitably chosen groups. This asymmetry is precisely what enables the Diffie--Hellman key exchange and related schemes.
+\end{remark}
+
+\begin{theorem}
+    (\emph{Diffie--Hellman key agreement}) Let $G = \langle g \rangle$ be a cyclic group in which the DLP is intractable, and let $p$ be a large prime with $G = \mathbb{Z}_p^\times$. Two parties, Alice and Bob, proceed as follows:
+    \begin{enumerate}
+        \item Alice chooses a secret $a \in \{1, \ldots, p-2\}$ and sends $A = g^a \bmod p$ to Bob.
+        \item Bob chooses a secret $b \in \{1, \ldots, p-2\}$ and sends $B = g^b \bmod p$ to Alice.
+        \item Alice computes $K = B^a = g^{ab} \bmod p$.
+        \item Bob computes $K = A^b = g^{ab} \bmod p$.
+    \end{enumerate}
+    Both parties now share the secret key $K = g^{ab} \bmod p$ without ever transmitting it directly. An eavesdropper who sees $g, p, g^a, g^b$ must solve the \emph{Computational Diffie--Hellman Problem} (CDH): compute $g^{ab}$ from $g^a$ and $g^b$---which is believed to be as hard as the DLP in most groups of interest.
+\end{theorem}
+
+\begin{proposition}
+    The \emph{Decision Diffie--Hellman Problem} (DDH) is: given $g, g^a, g^b, g^c$, decide whether $c \equiv ab \pmod{n}$ or $c$ is random. We have the chain of implications
+    \begin{align}
+        \text{DLP is easy} \;\Longrightarrow\; \text{CDH is easy} \;\Longrightarrow\; \text{DDH is easy}
+    \end{align}
+    The converse implications are not known to hold, and the DDH assumption—that DDH is hard—is used in the security proofs of schemes such as ElGamal encryption.
+\end{proposition}
+
+\begin{example}
+    Let $p = 23$, $g = 5$ (a generator of $\mathbb{Z}_{23}^\times$). Suppose Alice chooses $a = 6$ and sends $A = 5^6 \equiv 8 \pmod{23}$. Bob chooses $b = 15$ and sends $B = 5^{15} \equiv 19 \pmod{23}$. The shared secret is
+    \begin{align}
+        K &= 19^6 \equiv 2 \pmod{23} \quad \text{(Alice's computation)} \\
+        K &= 8^{15} \equiv 2 \pmod{23} \quad \text{(Bob's computation)}
+    \end{align}
+    Both compute $K = 2$, which can now be used to derive a symmetric key.
+\end{example}
+
+\begin{minted}{python}
+def dh_key_exchange(p, g, a, b):
+    """Simulate Diffie-Hellman key exchange.
+    Returns the shared secret and the public values."""
+    A = pow(g, a, p)  # Alice's public value
+    B = pow(g, b, p)  # Bob's public value
+    K_alice = pow(B, a, p)  # Alice computes g^(ab)
+    K_bob = pow(A, b, p)    # Bob computes g^(ab)
+    assert K_alice == K_bob
+    return A, B, K_alice
+
+p, g = 23, 5
+A, B, K = dh_key_exchange(p, g, a=6, b=15)
+print(f"A = {A}, B = {B}, shared secret K = {K}")
+# Output: A = 8, B = 19, shared secret K = 2
+\end{minted}
 
 
 \chapter{(Finite) Fields}
+\label{ch:fields}
 
 \begin{definition}
     A \emph{field}\index{field} $(\Bbbk, +, \cdot)$ is a set $\Bbbk$ with two binary operations
@@ -736,13 +1110,332 @@ A finite field of order $p^n$ for prime $p$ and positive integer $n$ is sometime
      The multiplicative group of a finite field is cyclic.
 \end{proposition}
 
-\chapter{Elliptic Curves}
+\begin{proof}
+    Let $\mathbb{F}_q$ be a finite field with $q = p^n$ elements and let $d$ divide $q - 1 = |\mathbb{F}_q^\times|$. The polynomial $x^d - 1$ has at most $d$ roots in $\mathbb{F}_q$. A standard counting argument (using the structure of finite Abelian groups and the fact that $\sum_{d|m} \varphi(d) = m$) then shows that there must exist an element of order $q - 1$ in $\mathbb{F}_q^\times$. See also page 199 of \cite{zheng2022modern}.
+\end{proof}
 
+\begin{corollary}
+    Every finite field $\mathbb{F}_q$ has a primitive root $g$, and every element of $\mathbb{F}_q^\times$ can be written uniquely as $g^k$ for $0 \leq k < q - 1$.
+\end{corollary}
+
+\begin{remark}
+    This cyclicity is what makes finite fields suitable for the discrete logarithm problem underlying Diffie--Hellman and ElGamal. The multiplicative group $\mathbb{F}_q^\times$ is a cyclic group of order $q - 1$, and the DLP in this group is believed to be hard for appropriately chosen prime powers $q$.
+\end{remark}
+
+\section{Structure and uniqueness}
+
+\begin{theorem}
+    (\emph{Uniqueness of finite fields}) For every prime power $p^n$, there exists, up to isomorphism, exactly one field with $p^n$ elements. We denote it by $\mathbb{F}_{p^n}$.
+\end{theorem}
+
+\begin{proof}
+    Uniqueness follows from the fact that $\mathbb{F}_{p^n}$ is the splitting field over $\mathbb{Z}_p$ of the polynomial $x^{p^n} - x$, since the multiplicative group $\mathbb{F}_{p^n}^\times$ is cyclic of order $p^n - 1$, so every non-zero element satisfies $a^{p^n-1} = 1$. Any two splitting fields of a polynomial are isomorphic.
+\end{proof}
+
+\begin{theorem}
+    $\mathbb{F}_{p^m}$ is a subfield of $\mathbb{F}_{p^n}$ if and only if $m$ divides $n$.
+\end{theorem}
+
+\begin{example}
+    $\mathbb{F}_4$ is a subfield of $\mathbb{F}_{16}$ since $2 \mid 4$. But $\mathbb{F}_4$ is not a subfield of $\mathbb{F}_8$, since $2 \nmid 3$.
+\end{example}
+
+\section{Construction of finite fields}
+
+In practice, we construct $\mathbb{F}_{p^n}$ by choosing an irreducible polynomial
+$f(x) \in \mathbb{Z}_p[x]$ of degree $n$ and taking the quotient
+$\mathbb{F}_{p^n} = \mathbb{Z}_p[x] / \langle f(x) \rangle$. The elements are
+polynomials of degree less than $n$ with coefficients in $\mathbb{Z}_p$, and
+multiplication is performed modulo $f(x)$.
+
+\begin{example}
+    \emph{The field $\mathbb{F}_4$}: Over $\mathbb{Z}_2$, the polynomial $x^2 + x + 1$ is irreducible (it has no roots in $\mathbb{Z}_2$). Hence
+    \begin{align}
+        \mathbb{F}_4 = \frac{\mathbb{Z}_2[x]}{\langle x^2 + x + 1 \rangle} = \{0, 1, \alpha, \alpha + 1\}
+    \end{align}
+    where $\alpha$ denotes the class of $x$ satisfying $\alpha^2 = \alpha + 1$. The multiplication table is:
+    \begin{align}
+        \alpha \cdot \alpha &= \alpha + 1, \\
+        \alpha \cdot (\alpha + 1) &= 1, \\
+        (\alpha + 1) \cdot (\alpha + 1) &= \alpha.
+    \end{align}
+    The multiplicative group $\mathbb{F}_4^\times = \{1, \alpha, \alpha+1\}$ is cyclic of order $3$, generated by $\alpha$.
+\end{example}
+
+\begin{example}
+    \emph{The field $\mathbb{F}_{2^8}$ used in AES}: The AES block cipher operates over the field $\mathbb{F}_{256} = \mathbb{F}_{2^8}$, constructed as
+    \begin{align}
+        \mathbb{F}_{2^8} = \frac{\mathbb{Z}_2[x]}{\langle x^8 + x^4 + x^3 + x + 1 \rangle}
+    \end{align}
+    where $x^8 + x^4 + x^3 + x + 1$ is the irreducible polynomial officially specified by NIST for AES. Byte substitution (the S-box), MixColumns, and the key schedule all rely on operations in this field.
+\end{example}
+
+\begin{minted}{python}
+def gf_mul(a, b, mod=0x11B, degree=8):
+    """Multiply two polynomials over GF(2) modulo the given polynomial.
+    Uses Russian peasant multiplication."""
+    result = 0
+    while b:
+        if b & 1:
+            result ^= a
+        carry = a >> (degree - 1)  # highest-degree bit
+        a = (a << 1) & ((1 << degree) - 1)
+        if carry:
+            a ^= mod  # reduce modulo the defining polynomial
+        b >>= 1
+    return result
+
+# AES field reduction polynomial: x^8 + x^4 + x^3 + x + 1 = 0x11B
+print(f"alpha*alpha in GF(2^8) = {gf_mul(2, 2):#04x}")  # 0x04
+print(f"2 * 0x57 over GF(2^8) = {gf_mul(2, 0x57):#04x}")
+\end{minted}
+
+\section{Trace and norm}
+
+\begin{definition}
+    Let $\mathbb{F}_{p^m} \subseteq \mathbb{F}_{p^n}$ with $m \mid n$. The \emph{trace}\index{trace!of field element} is the map
+    \begin{align}
+        \mathrm{Tr}: \mathbb{F}_{p^n} &\longrightarrow \mathbb{F}_{p^m} \\
+        \alpha &\longmapsto \alpha + \alpha^{p^m} + \alpha^{p^{2m}} + \cdots + \alpha^{p^{(n/m - 1)m}}
+    \end{align}
+    and the \emph{norm}\index{norm!of field element} is the map
+    \begin{align}
+        \mathrm{N}: \mathbb{F}_{p^n} &\longrightarrow \mathbb{F}_{p^m} \\
+        \alpha &\longmapsto \alpha \cdot \alpha^{p^m} \cdot \alpha^{p^{2m}} \cdots \alpha^{p^{(n/m-1)m}} = \alpha^{(p^n-1)/(p^m-1)}
+    \end{align}
+\end{definition}
+
+\begin{proposition}
+    The trace map is $\mathbb{F}_{p^m}$-linear and surjective. The norm map is multiplicative, that is, $\mathrm{N}(\alpha\beta) = \mathrm{N}(\alpha)\mathrm{N}(\beta)$, and its image is all of $\mathbb{F}_{p^m}^\times$.
+\end{proposition}
+
+\begin{remark}
+    Trace and norm maps are used in pairing-based cryptography and in the design of efficient implementations of finite field arithmetic.
+\end{remark}
+
+\chapter{Elliptic Curves}
+\label{ch:elliptic}
+
+Elliptic curve cryptography (ECC) is a modern public-key cryptographic framework
+that offers advantages over traditional schemes: smaller key sizes, faster
+computation, and lower bandwidth requirements. For example, a 256-bit elliptic
+curve key offers comparable security to a 3072-bit RSA key. The security of ECC
+relies on the hardness of the \emph{Elliptic Curve Discrete Logarithm Problem}
+(ECDLP). In this chapter, we develop the mathematical framework of elliptic
+curves, focusing on the group law and the cryptographic applications.
+
+% ref: An Introduction to Mathematical Cryptography by Hoffstein, Pipher, and Silverman
+
+\section{Definitions}
+
+\begin{definition}
+    Let $\Bbbk$ be a field of characteristic different from $2$ and $3$. An \emph{elliptic curve}\index{elliptic curve} over $\Bbbk$ is the set of points $(x, y) \in \Bbbk^2$ satisfying the \emph{Weierstrass equation}\index{Weierstrass equation}
+    \begin{align}
+        E: \quad y^2 = x^3 + ax + b
+    \end{align}
+    where $a, b \in \Bbbk$ are constants such that the discriminant
+    \begin{align}
+        \Delta = -16(4a^3 + 27b^2) \neq 0
+    \end{align}
+    Together with a special point $\mathcal{O} = (0:1:0)$ called the \emph{point at infinity}\index{point at infinity}. The condition $\Delta \neq 0$ ensures that the curve is \emph{non-singular}---that is, it has no cusps or self-intersections.
+\end{definition}
+
+\begin{remark}
+    When $\mathrm{char}(\Bbbk) \in \{2, 3\}$, the Weierstrass equation takes slightly different forms to account for the degenerate behaviour of the discriminant. For binary fields $\mathbb{F}_{2^n}$, the curve takes the form
+    \begin{align}
+        y^2 + xy = x^3 + ax^2 + b
+    \end{align}
+    These are called \emph{binary} or \emph{Koblitz} curves, and are used in some standards (e.g., NIST binary curves).
+\end{remark}
+
+\begin{example}
+    Consider the curve $y^2 = x^3 - x$ over $\mathbb{R}$. We have $a = -1$, $b = 0$, and
+    \begin{align}
+        \Delta = -16(4(-1)^3 + 27(0)^2) = 64 \neq 0
+    \end{align}
+    so this is indeed a valid elliptic curve. Its points over $\mathbb{Q}$ include $(0,0)$, $(1,0)$, and $(-1,0)$.
+\end{example}
+
+\section{The group law}
+
+The most important property of elliptic curves is that their points form an
+Abelian group under a geometrically defined operation. We describe this
+operation first geometrically, then give explicit algebraic formulas.
+
+\begin{description}
+    \item[\emph{Point addition.}] Given two distinct points $P$ and $Q$ on $E$, draw the line through $P$ and $Q$. This line intersects the curve at a third point $R'$. Reflecting $R'$ across the $x$-axis gives the point $R = P + Q$.
+    \item[\emph{Point doubling.}] If $P = Q$, draw the tangent line to the curve at $P$. This line intersects the curve at a second point $R'$. Reflecting gives $R = 2P$.
+\end{description}
+
+The point at infinity $\mathcal{O}$ serves as the identity element: $P + \mathcal{O} = P$ for all points $P$.
+
+\begin{theorem}
+    (\emph{Explicit formulas for the group law}) Let $E: y^2 = x^3 + ax + b$ be an elliptic curve over a field of characteristic not $2$ or $3$, and let $P = (x_1, y_1)$ and $Q = (x_2, y_2)$ be points on $E$ with $P, Q \neq \mathcal{O}$.
+    
+    \emph{Case 1: $P \neq Q$.} If $x_1 \neq x_2$, define the slope
+    \begin{align}
+        \lambda = \frac{y_2 - y_1}{x_2 - x_1}
+    \end{align}
+    Then $P + Q = (x_3, y_3)$ where
+    \begin{align}
+        x_3 &= \lambda^2 - x_1 - x_2, \\
+        y_3 &= \lambda(x_1 - x_3) - y_1
+    \end{align}
+    
+    \emph{Case 2: $P = Q$ (doubling).} If $y_1 \neq 0$, define the slope
+    \begin{align}
+        \lambda = \frac{3x_1^2 + a}{2y_1}
+    \end{align}
+    Then $2P = (x_3, y_3)$ where
+    \begin{align}
+        x_3 &= \lambda^2 - 2x_1, \\
+        y_3 &= \lambda(x_1 - x_3) - y_1
+    \end{align}
+    
+    \emph{Case 3: special cases.} If $P = -Q$ (i.e., $x_1 = x_2$ and $y_1 = -y_2$), then $P + Q = \mathcal{O}$.
+\end{theorem}
+
+\begin{proposition}
+    The set $E(\Bbbk)$ of $\Bbbk$-rational points on an elliptic curve $E$ becomes an Abelian group under the group law defined above. The point $\mathcal{O}$ is the identity, and the inverse of $P = (x, y)$ is $-P = (x, -y)$.
+\end{proposition}
+
+\begin{example}
+    On the curve $y^2 = x^3 - x$ over $\mathbb{Q}$, take $P = (0, 0)$ and $Q = (1, 0)$. The slope is
+    \begin{align}
+        \lambda = \frac{0 - 0}{1 - 0} = 0
+    \end{align}
+    so $x_3 = 0 - 0 - 1 = -1$ and $y_3 = 0(0 - (-1)) - 0 = 0$. Hence $P + Q = (-1, 0)$.
+    
+    For doubling, take $P = (-1, 0)$. Since $y_1 = 0$, the formula for doubling does not directly apply ($\lambda$ would be undefined). Instead, $2P = \mathcal{O}$ because $P$ has order $2$.
+\end{example}
+
+\begin{minted}{python}
+def point_add(P, Q, a, p):
+    """Add two points on E: y^2 = x^3 + ax + b (mod p)."""
+    if P is None:  # point at infinity (identity)
+        return Q
+    if Q is None:
+        return P
+    x1, y1 = P
+    x2, y2 = Q
+    if x1 == x2 and (y1 + y2) % p == 0:
+        return None  # P + (-P) = O
+    if P == Q:
+        # slope for doubling
+        lam = (3 * x1 * x1 + a) * pow(2 * y1, -1, p) % p
+    else:
+        lam = (y2 - y1) * pow(x2 - x1, -1, p) % p
+    x3 = (lam * lam - x1 - x2) % p
+    y3 = (lam * (x1 - x3) - y1) % p
+    return (x3, y3)
+
+# Curve y^2 = x^3 + 2x + 2 over GF(17)
+a, b, p = 2, 2, 17
+P = (5, 1)
+Q = point_add(P, P, a, p)      # 2P
+R = point_add(Q, P, a, p)      # 3P
+print(f"2P = {Q}, 3P = {R}")
+\end{minted}
+
+\section{Elliptic curves over finite fields}
+
+When $\Bbbk = \mathbb{F}_q$ is a finite field with $q$ elements, the elliptic curve
+$E(\mathbb{F}_q)$ is a finite Abelian group. Its size is governed by the following
+deep result:
+
+\begin{theorem}
+    (\emph{Hasse's theorem}) Let $E$ be an elliptic curve over $\mathbb{F}_q$. Then the number of $\mathbb{F}_q$-rational points satisfies
+    \begin{align}
+        |q + 1 - \#E(\mathbb{F}_q)| \leq 2\sqrt{q}
+    \end{align}
+    Equivalently,
+    \begin{align}
+        \#E(\mathbb{F}_q) = q + 1 - t, \quad \text{where } |t| \leq 2\sqrt{q}
+    \end{align}
+    The quantity $t$ is called the \emph{trace of Frobenius}.
+\end{theorem}
+
+\begin{theorem}
+    (\emph{Structure of $E(\mathbb{F}_q)$}) The group $E(\mathbb{F}_q)$ is either cyclic, or the product of two cyclic groups:
+    \begin{align}
+        E(\mathbb{F}_q) \cong \mathbb{Z}_{n_1} \times \mathbb{Z}_{n_2}
+    \end{align}
+    where $n_2$ divides $n_1$.
+\end{theorem}
+
+\begin{definition}
+    The \emph{Elliptic Curve Discrete Logarithm Problem} (ECDLP)\index{ECDLP} is: given an elliptic curve $E$ over $\mathbb{F}_q$, a point $P \in E(\mathbb{F}_q)$ of order $n$, and a point $Q$ in the subgroup generated by $P$, find the integer $k \in \{0, 1, \ldots, n-1\}$ such that $Q = kP$.
+\end{definition}
+
+\begin{remark}
+    The ECDLP is believed to be harder than the classical DLP in $\mathbb{F}_p$ for similarly sized parameters. This is because generic algorithms (such as Pollard's rho method) that run in $O(\sqrt{n})$ are the best known attacks on the ECDLP, whereas the index calculus method---much faster---applies to the DLP in $\mathbb{F}_p$. As a result, elliptic curve cryptography can achieve comparable security with considerably smaller key sizes: 256 bits (ECC) vs.\ 3072 bits (RSA/classical DL).
+\end{remark}
+
+\section{Cryptographic applications}
+
+\subsection{ECDH key exchange}
+
+The \emph{Elliptic Curve Diffie--Hellman} (ECDH) key exchange is the elliptic-curve analogue of the classical Diffie--Hellman protocol from Chapter~\ref{ch:groups}:
+
+\begin{enumerate}
+    \item Both parties agree on a common curve $E$ over $\mathbb{F}_q$ and a base point $P \in E(\mathbb{F}_q)$ of large prime order $n$.
+    \item Alice chooses a secret scalar $a$ and publishes $Q_A = aP$.
+    \item Bob chooses a secret scalar $b$ and publishes $Q_B = bP$.
+    \item Alice computes $K = a Q_B = abP$.
+    \item Bob computes $K = b Q_A = abP$.
+\end{enumerate}
+
+The shared secret $K = abP$ is then used to derive a symmetric key for encryption. Its security relies on the ECDLP: an eavesdropper who sees $P$, $Q_A$, and $Q_B$ must recover $abP$ without knowing $a$ or $b$.
+
+\subsection{ECDSA signatures}
+
+The \emph{Elliptic Curve Digital Signature Algorithm} (ECDSA) is the elliptic-curve
+variant of DSA. At its core, ECDSA signing and verification work as follows:
+\begin{enumerate}
+    \item Choose a curve $E$ over $\mathbb{F}_q$ and a base point $P$ of order $n$.
+    \item The signer has a private key $d$ and publishes the public key $Q = dP$.
+    \item To sign a message whose hash is $z$: choose a random $k$, compute $R = kP$, let $r = x_R \bmod n$, and compute $s = k^{-1}(z + rd) \bmod n$. The signature is $(r, s)$.
+    \item To verify: compute $u_1 = s^{-1}z \bmod n$, $u_2 = s^{-1}r \bmod n$, and $v = u_1 P + u_2 Q$; accept if $x_v \equiv r \pmod n$.
+\end{enumerate}
+
+\begin{remark}
+    The nonce $k$ in ECDSA must be chosen freshly and randomly for each signature. If the same $k$ is reused for two different messages, an attacker can recover the private key $d$ from the two signatures---this is exactly the vulnerability exploited in several real-world attacks (e.g., the PlayStation~3 signing key and the Bitcoin transaction incidents).
+\end{remark}
+
+\section{Pairings}
+
+\begin{definition}
+    A \emph{bilinear pairing}\index{pairing} is a map
+    \begin{align}
+        e: G_1 \times G_2 \longrightarrow G_T
+    \end{align}
+    between groups of prime order $r$ that is bilinear:
+    \begin{align}
+        e(P_1 + P_2, Q) &= e(P_1, Q) \cdot e(P_2, Q), \\
+        e(P, Q_1 + Q_2) &= e(P, Q_1) \cdot e(P, Q_2), \\
+        e(aP, bQ) &= e(P, Q)^{ab}
+    \end{align}
+    The most widely used pairings are the \emph{Weil pairing}\index{Weil pairing} and the \emph{Tate pairing}\index{Tate pairing} on suitably chosen elliptic curves.
+\end{definition}
+
+\begin{remark}
+    Pairings have both constructive and destructive uses in cryptography. Constructively, they enable \emph{identity-based encryption}\index{identity-based encryption}, \emph{short signatures}\index{short signature}, and \emph{attribute-based encryption}. Destructively, the \emph{MOV attack} uses pairings to reduce the ECDLP on certain curves (called \emph{supersingular curves}) to the DLP in $\mathbb{F}_{q^k}$ for some extension degree $k$, where it may be solvable by index calculus. For this reason, modern protocols avoid curves susceptible to MOV-type attacks.
+\end{remark}
 
 \chapter{Probability}
 % ref: Mathematics of Information by Stefan Schaffler
 % ref: Probability by John W.Lamperti
+\label{ch:probability}
 
+Probability theory provides the mathematical foundation for analyzing the
+security of cryptographic systems. Security definitions---such as semantic
+security, indistinguishability, and the advantage of an adversary---are stated
+in terms of probabilities. Moreover, probabilistic algorithms (e.g., Miller--Rabin
+primality testing from Chapter~\ref{ch:integers}) and random number generation
+(Chapter~\ref{ch:random}) rely on basic probabilistic concepts. In this chapter,
+we collect the essential probability results used throughout this document.
+
+\section{Basic notions}
 
 \begin{definition}
     A collection of all elementary results, or outcomes of an experiment, is called a \emph{sample space}\index{sample space}. We usually denote it by $\Omega$.
@@ -772,7 +1465,128 @@ A \emph{measurable space} $(\Omega, \EuScript{S})$ is a pair consisting of a \em
     \end{align}
 \end{enumerate}
 
+\begin{definition}
+    A \emph{random variable}\index{random variable} on a probability space $(\Omega, \EuScript{S}, \pr)$ is a function $X: \Omega \longrightarrow \mathbb{R}$ that is measurable with respect to $\EuScript{S}$, meaning that for every interval $I \subseteq \mathbb{R}$, the pre-image $X^{-1}(I)$ is an event. If $X$ takes values in a finite or countable set, $X$ is said to be \emph{discrete}.
+\end{definition}
+
+\section{Conditional probability and Bayes' theorem}
+
+Conditional probability is central to cryptographic security analysis. For
+example, the definition of \emph{perfect secrecy} in Chapter~\ref{ch:infotheory}
+uses the conditional probability $\pr(x|y)$ of a plaintext $x$ given a ciphertext $y$.
+
+\begin{definition}
+    Let $A$ and $B$ be events with $\pr(B) > 0$. The \emph{conditional probability}\index{conditional probability} of $A$ given $B$ is defined by
+    \begin{align}
+        \pr(A | B) &\defn \frac{\pr(A \cap B)}{\pr(B)}
+    \end{align}
+    Two events $A$ and $B$ are said to be \emph{independent}\index{independence} if
+    \begin{align}
+        \pr(A \cap B) = \pr(A) \cdot \pr(B)
+    \end{align}
+\end{definition}
+
+\begin{proposition}
+    (\emph{Law of total probability}) Let $B_1, B_2, \ldots, B_n$ be a partition of the sample space $\Omega$ (i.e., $\bigcup_i B_i = \Omega$ and $B_i$ are pairwise disjoint), each with positive probability. Then for any event $A$,
+    \begin{align}
+        \pr(A) = \sum_{i=1}^{n} \pr(A | B_i) \pr(B_i)
+    \end{align}
+\end{proposition}
+
+\begin{theorem}
+    (\emph{Bayes' theorem}\index{Bayes' theorem}) Let $B_1, B_2, \ldots, B_n$ be a partition of $\Omega$ with $\pr(B_i) > 0$ for all $i$. Then for any event $A$ with $\pr(A) > 0$,
+    \begin{align}
+        \pr(B_j | A) = \frac{\pr(A | B_j) \pr(B_j)}{\sum_{i=1}^{n} \pr(A | B_i) \pr(B_i)}
+    \end{align}
+\end{theorem}
+
+\begin{proof}
+    By the definition of conditional probability,
+    \begin{align}
+        \pr(B_j | A) = \frac{\pr(A \cap B_j)}{\pr(A)} = \frac{\pr(A | B_j) \pr(B_j)}{\pr(A)}
+    \end{align}
+    Now apply the law of total probability to $\pr(A)$.
+\end{proof}
+
+\begin{example}
+    \emph{Application to cryptanalysis.} Suppose a ciphertext $c$ has been observed. Let $K$ denote a random variable over the key space, and $M$ over the plaintext space. Bayes' theorem gives the a posteriori distribution
+    \begin{align}
+        \pr(M = m | C = c) = \frac{\pr(C = c | M = m) \cdot \pr(M = m)}{\sum_{m'} \pr(C = c | M = m') \pr(M = m')}
+    \end{align}
+    Perfect secrecy (Chapter~\ref{ch:infotheory}) requires that knowledge of $c$ does not change the a priori distribution of $m$, i.e., $\pr(m|c) = \pr(m)$ for all $m$ and $c$.
+\end{example}
+
+\section{Random variables and expectation}
+
+\begin{definition}
+    Let $X$ be a discrete random variable taking values in a countable set $\EuScript{X}$. Its \emph{probability mass function}\index{probability mass function} is the function $p_X: \EuScript{X} \longrightarrow [0,1]$ given by $p_X(x) = \pr(X = x)$. The \emph{expected value}\index{expected value} (or \emph{mean}) of $X$ is
+    \begin{align}
+        \mathrm{E}[X] \defn \sum_{x \in \EuScript{X}} x \cdot p_X(x)
+    \end{align}
+    provided the sum converges absolutely.
+\end{definition}
+
+\begin{proposition}
+    (\emph{Linearity of expectation}) Let $X$ and $Y$ be random variables and $c \in \mathbb{R}$. Then
+    \begin{align}
+        \mathrm{E}[X + Y] &= \mathrm{E}[X] + \mathrm{E}[Y] \\
+        \mathrm{E}[cX] &= c \cdot \mathrm{E}[X]
+    \end{align}
+    These hold regardless of whether $X$ and $Y$ are independent.
+\end{proposition}
+
+\begin{definition}
+    Let $X$ and $Y$ be random variables. The \emph{covariance}\index{covariance} of $X$ and $Y$ is
+    \begin{align}
+        \mathrm{Cov}(X, Y) \defn \mathrm{E}\big[ (X - \mathrm{E}[X])(Y - \mathrm{E}[Y]) \big]
+    \end{align}
+    The \emph{variance}\index{variance} of $X$ is $\mathrm{Var}(X) = \mathrm{Cov}(X, X)$, and the \emph{standard deviation} is $\sigma(X) = \sqrt{\mathrm{Var}(X)}$.
+\end{definition}
+
+\begin{proposition}
+    If $X$ and $Y$ are independent random variables, then
+    \begin{align}
+        \mathrm{E}[XY] &= \mathrm{E}[X] \cdot \mathrm{E}[Y], \\
+        \mathrm{Var}(X + Y) &= \mathrm{Var}(X) + \mathrm{Var}(Y)
+    \end{align}
+\end{proposition}
+
+\begin{theorem}
+    (\emph{Markov's inequality}) If $X$ is a non-negative random variable with finite mean, then for every $a > 0$
+    \begin{align}
+        \pr(X \geq a) \leq \frac{\mathrm{E}[X]}{a}
+    \end{align}
+\end{theorem}
+
+\begin{theorem}
+    (\emph{Chebyshev's inequality}) If $X$ has finite mean $\mu = \mathrm{E}[X]$ and variance $\sigma^2 = \mathrm{Var}(X)$, then for every $k > 0$
+    \begin{align}
+        \pr(|X - \mu| \geq k\sigma) \leq \frac{1}{k^2}
+    \end{align}
+\end{theorem}
+
+\begin{remark}
+    Markov's and Chebyshev's inequalities play a central role in the analysis of randomized algorithms in cryptography. For instance, the analysis of the Miller--Rabin primality test (Chapter~\ref{ch:integers}) uses probability estimates to bound the probability of error after $k$ iterations, which is at most $(1/4)^k$ by the Monier--Rabin theorem.
+\end{remark}
+
+\begin{theorem}
+    (\emph{Hoeffding's inequality}) Let $X_1, X_2, \ldots, X_n$ be independent random variables with $0 \leq X_i \leq 1$. Then for any $t > 0$,
+    \begin{align}
+        \pr\bigg( \bigg| S_n - \mathrm{E}[S_n] \bigg| \geq t \bigg) \leq 2\exp(-2t^2/n)
+    \end{align}
+    where $S_n = X_1 + X_2 + \cdots + X_n$.
+\end{theorem}
+
+\begin{definition}
+    A \emph{binomial random variable}\index{binomial random variable} $\mathrm{Bin}(n, p)$ counts the number of successes in $n$ independent trials, each with success probability $p$. Its probability mass function is
+    \begin{align}
+        \pr(X = k) = \binom{n}{k} p^k (1-p)^{n-k}, \quad k = 0, 1, \ldots, n
+    \end{align}
+    Its mean is $np$ and its variance is $np(1-p)$.
+\end{definition}
+
 \chapter{Information Theory}
+\label{ch:infotheory}
 Information theory was founded by Claude Shannon in 1948 as a discipline to study the quantification, storage, and communication of information. In the past decades, it has played a critical role in modern communication as well as many other applications in engineering and computer science.  
 % Mutual information and the Kullback-Leibler (KL) divergence 
 
@@ -797,7 +1611,7 @@ Let us consider the space of all messages to have a probability distribution. Th
 
 
 % ref: Python for Probability, Statistics and Machine Learning by Jose Unpingco
-The only mathematical operator that satisfies these relations is the logarithm operator (up tp scalar multiple). Therefore, we have the following definition:
+The only mathematical operator that satisfies these relations is the logarithm operator (up to scalar multiple). Therefore, we have the following definition:
 \begin{definition}
     The \emph{Shannon} \emph{information content} (or \emph{uncertainty content}) of an outcome $X = x$ is defined by
     \begin{align}
@@ -824,7 +1638,7 @@ Entropy is the amount of information provided by an observation of a random vari
     The (\emph{Shannon}) \emph{entropy}\index{entropy} or \emph{uncertainty} of a discrete random variable $X$ with a probability distribution function $\pr: \EuScript{S} \longrightarrow [0,1]$ is defined by
     \begin{align}
         H(X) &\defn \sum_{x \in \EuScript{S}} \pr(X = x) \log\left( \frac{1}{\pr(X = x)} \right)  \\
-        \bigg[&= - \sum_{x \in \EuScript{S}} p_x \log(p_x) \bigg]\\
+        &= -\sum_{x \in \EuScript{S}} p_x \log(p_x) \\
         &= \mathrm{E}[I(X)] 
     \end{align}
     If we restrict to binary logarithm $\log_2(\square)$, we refer to $H(X)$ as \emph{binary} (\emph{Shannon}) entropy. When the base is not mentioned, we assume that it to be 2. So mostly we are dealing with the binary entropy. We can also think of entropy as the average information. Observe that $\log(x)$ is undefined if $x = 0$. Hence, entropy is sometimes defined to be the relevant sum over all the non-zero probabilities\footnote{Also referred as $\supp(X)$}. However, since
@@ -838,9 +1652,10 @@ Entropy is the amount of information provided by an observation of a random vari
 \begin{example}
     Let the discrete random variable $X$ takes values from the set $\{1,2,3,4,5,6\}$ with $\pr(X = i) = \dfrac{1}{6}$ for each $i = 1, 2, \ldots, 6$. The entropy in this case is given by 
     \begin{align}
-        H(X) &= -\sum_{i=1}^6 \frac{1}{6}\log(6) \\
-            &= -\log(6)
+        H(X) &= -\sum_{i=1}^6 \frac{1}{6}\log_2\left(\frac{1}{6}\right) \\
+            &= \log_2(6) \approx 2.585
     \end{align}
+    This is the entropy of an unloaded die, which is the maximum possible entropy for a random variable with six equally likely outcomes.
 \end{example}
 
 Let us look at the entropy of the various components of a cryptosystem. We
@@ -849,27 +1664,15 @@ can think of the key as being a random variable $k$ that takes on values in $k$,
 \innote{}{League of Entropy: \url{https://drand.love/loe/}}
 
 \begin{example}
-    Let $\EuScript{P} = \{0,1\}$ with 
-
+    Let $\EuScript{P} = \{0,1\}$ with $\pr(X = 0) = p$ and $\pr(X = 1) = 1 - p$. Then
+    \begin{align}
+        H(X) &= -p\log_2(p) - (1-p)\log_2(1-p)
+    \end{align}
+    The maximum entropy $H(X) = 1$ is achieved when $p = \tfrac{1}{2}$, that is, when the two outcomes are equally likely.
 \end{example}
 
-
-
 \begin{example}
-    If $X$ is binary with two possible values $x_1$ and $x_2$ such that
-    \begin{align}
-        \pr(X = x_1) &= p \\
-        \pr(X = x_2) &= 1-p
-    \end{align}
-    then 
-    \begin{align}
-        H(X) = - p \log(p) - (1-p)\log(1-p)
-    \end{align}
-\end{example}
-
-
-\begin{example}
-    \emph{Entropy of English language}:
+    \emph{Entropy of English language}: Shannon estimated the entropy of English text by having subjects predict the next letter in a sequence. He estimated that the entropy of English is approximately $1.0$ to $1.5$ bits per character. This means that despite using 26 letters (which would require $\log_2(26) \approx 4.7$ bits each if uniformly distributed), the inherent uncertainty is much lower due to the statistical structure of the language. This result has profound implications for data compression: English text can theoretically be compressed to roughly $30\%$ of its original size.
 \end{example}
 
 
@@ -910,7 +1713,19 @@ expect that when $\pr(X =k) = \dfrac{1}{n}$, the corresponding value of $H$ is m
     for all $X$. The maximum is achieved if and only if $X \sim U_n$. In plain words, the maximum entropy is given if all the events occur equally often.
 \end{proposition}
 \begin{proof}
-    
+    Consider the function $f(x) = x\log(x)$ for $x \in (0, 1]$, which is a convex function of $x$. By Jensen's inequality (see Theorem above),
+    \begin{align}
+        \sum_{i=1}^{n} \frac{1}{n} f(p_i) &\geq f\bigg( \sum_{i=1}^{n} \frac{p_i}{n} \bigg) = f\bigg(\frac{1}{n}\bigg) = \frac{1}{n}\log\bigg(\frac{1}{n}\bigg)
+    \end{align}
+    where $p_i = \pr(X = x_i)$. Multiplying both sides by $n$ gives
+    \begin{align}
+        \sum_{i=1}^{n} p_i \log(p_i) &\geq \log\bigg(\frac{1}{n}\bigg)
+    \end{align}
+    and hence
+    \begin{align}
+        H(X) = -\sum_{i=1}^{n} p_i \log(p_i) &\leq \log(n)
+    \end{align}
+    Equality holds if and only if all the $p_i$ are equal, that is, if and only if $X$ is uniformly distributed.
 \end{proof}
 % ref: An Introduction to Mathematical Cryptography by Jeffrey Hoffstein, Jill Pipher and Joseph H.Silverman
 % ref: Basic Principles and Applications of Probability Theory by A.V.Skorokhod
@@ -963,28 +1778,168 @@ Although it is not possible to precisely determine the entropy of the English la
     1.0 \leq H(E) \leq 1.5
 \end{align}
 This means that despite the fact that it requires almost five bits to represent each of the 26 letters used in English, each letter conveys less than one and a half bits of information. Thus English is approximately 70\% redundant\footnote{This does not mean that one can remove 70\% of the letters and still have an intelligible message. What it means is that in principle, it is possible to take a long message that requires 4.7 bits to specify each letter and to compress it into a form that takes only 30\% as many bits.}.
-\section{Kullback-Leibler divergence}
+\section{Kullback--Leibler divergence}
 
+The Kullback--Leibler (KL) divergence quantifies how much one probability
+distribution diverges from another. It is central to the study of
+\emph{min-entropy} and \emph{guessing} in cryptographic applications.
 
+\begin{definition}
+    Let $P$ and $Q$ be two probability distributions over a countable set $\EuScript{X}$. The \emph{Kullback--Leibler divergence}\index{Kullback--Leibler divergence} (or \emph{relative entropy}) from $Q$ to $P$ is defined as
+    \begin{align}
+        D_{\mathrm{KL}}(P \| Q) &\defn \sum_{x \in \EuScript{X}} P(x) \log\left( \frac{P(x)}{Q(x)} \right)
+    \end{align}
+    where we adopt the convention that $0 \log \frac{0}{q} = 0$ for any $q \geq 0$ and $p \log \frac{p}{0} = \infty$ for $p > 0$.
+\end{definition}
+
+\begin{remark}
+    The KL divergence is not a true metric since it is not symmetric: $D_{\mathrm{KL}}(P \| Q) \neq D_{\mathrm{KL}}(Q \| P)$ in general. It is also not subadditive in general. However, it is always non-negative (see the data processing inequality below).
+\end{remark}
+
+\begin{theorem}
+    (\emph{Gibbs' inequality / non-negativity of KL divergence}) For any probability distributions $P$ and $Q$ over $\EuScript{X}$,
+    \begin{align}
+        D_{\mathrm{KL}}(P \| Q) \geq 0
+    \end{align}
+    with equality if and only if $P = Q$.
+\end{theorem}
+
+\begin{proof}
+    Since $\ln$ is strictly concave, we have $\ln(t) \leq t - 1$ for all $t > 0$, with equality if and only if $t = 1$. Hence
+    \begin{align}
+        -D_{\mathrm{KL}}(P \| Q) &= \sum_{x} P(x) \ln\left( \frac{Q(x)}{P(x)} \right) \\
+        &\leq \sum_{x} P(x) \left( \frac{Q(x)}{P(x)} - 1 \right) = \sum_{x} Q(x) - \sum_{x} P(x) = 0
+    \end{align}
+    with equality if and only if $\frac{Q(x)}{P(x)} = 1$ for all $x$ where $P(x) > 0$.
+\end{proof}
+
+\begin{proposition}
+    The KL divergence decomposes as the difference between entropy and conditional entropy:
+    \begin{align}
+        D_{\mathrm{KL}}(P_X \| P_Y) = H(X) - H(X|Y)
+    \end{align}
+    for the appropriate joint and marginal distributions. In particular, the KL divergence measures the expected extra information gained when the true distribution is $P$ rather than the assumed distribution $Q$.
+\end{proposition}
+
+\begin{proposition}
+    (\emph{Data processing inequality}) If $X \to Y \to Z$ forms a Markov chain (i.e., $Y$ is a function of $X$ and $Z$ is a function of $Y$), then
+    \begin{align}
+        D_{\mathrm{KL}}(P_{XZ} \| Q_{XZ}) \geq D_{\mathrm{KL}}(P_{XZ'} \| Q_{XZ'})
+    \end{align}
+    where $Z'$ is obtained from $X$ by the same stochastic process. In words, processing cannot increase distinguishability.
+\end{proposition}
+
+\begin{definition}
+    The \emph{min-entropy}\index{min-entropy} of a discrete random variable $X$ is defined by
+    \begin{align}
+        H_\infty(X) \defn -\log\left( \max_x \pr(X = x) \right)
+    \end{align}
+    This is the entropy measure most relevant for analyzing the difficulty of guessing an output of a random source, as in cryptographic random oracle models.
+\end{definition}
 
 \section{Information entropy analysis}
-The entropy analysis is used to test the robustness of the encryption algorithm. It is very important to compare the entropy of plain images and ciphered images. By doing so, we are able to see that the entropy of the encrypted images is approximately equal to an 8-bit depth. This will help us to prove the encryption technique against the entropy attack
+
+The entropy analysis is used to test the robustness of encryption algorithms. A
+good cipher should produce ciphertexts whose entropy is close to the maximum
+possible for the given alphabet size. For an 8-bit block cipher output (bytes),
+the maximum entropy is 8 bits, which is achieved by a perfectly uniform
+distribution over $\{0, 1, \ldots, 255\}$.
+
+\begin{proposition}
+    If $X$ is uniformly distributed over $\{0, 1, 2, \ldots, 2^n - 1\}$, then $H(X) = n$ bits. This is the maximum entropy for a random variable over a set of size $2^n$.
+\end{proposition}
+
+\begin{remark}
+    For a cipher with output alphabet $\{0, 1\}^8$, a ciphertext with entropy less than $8$ bits would indicate non-uniformity in the output distribution, which an attacker could exploit. The entropy test for an encrypted image $E$ with pixel values in $\{0, \ldots, 255\}$ is:
+    \begin{align}
+        H(E) = -\sum_{i=0}^{255} \pr(E = i) \log_2 \pr(E = i)
+    \end{align}
+    A value $H(E) \approx 8$ is desirable; a value significantly below 8 indicates a vulnerability to entropy-based attacks.
+\end{remark}
+
+\section{Mutual information}
+
+\begin{definition}
+    Let $X$ and $Y$ be discrete random variables with a joint distribution $\pr(X=x, Y=y)$. The \emph{mutual information}\index{mutual information} between $X$ and $Y$ is defined by
+    \begin{align}
+        I(X; Y) &\defn \sum_{x,y} \pr(x, y) \log\left( \frac{\pr(x, y)}{\pr(x) \pr(y)} \right) \\
+        &= H(X) + H(Y) - H(X, Y) \\
+        &= H(X) - H(X|Y) \\
+        &= H(Y) - H(Y|X)
+    \end{align}
+\end{definition}
+
+\begin{proposition}
+    Mutual information is always non-negative:
+    \begin{align}
+        I(X; Y) \geq 0
+    \end{align}
+    with equality if and only if $X$ and $Y$ are independent.
+\end{proposition}
+
+\begin{remark}
+    In the context of side-channel attacks, mutual information between the secret key and a side-channel leakage signal (e.g., power consumption) measures the mutual information leakage of the device. A secure implementation should minimize $I(K; L)$ where $K$ is the key and $L$ is the leakage.
+\end{remark}
 
 \section{Perfect Secrecy}
-A cryptosystem has perfect secrecy if the interception of a ciphertext gives
-the cryptanalyst no information about the underlying plaintext and no in-
-formation about any future encrypted messages.
 
-
+Perfect secrecy, introduced by Shannon in 1949, provides the gold standard for
+theoretical security: observing the ciphertext reveals \emph{absolutely nothing}
+about the plaintext.
 
 % ref: Cryptography Theory and Practice by Douglas R.Stinson and Maura B.Paterson
+
 \begin{definition}
-    A cryptosystem has perfect secrecy if 
+    A cryptosystem has \emph{perfect secrecy}\index{perfect secrecy} if 
     \begin{align}
         \pr(x|y) = \pr(x)
     \end{align}
     for all $x \in \EuScript{P}$, $y \in \EuScript{C}$. That is, the \emph{a posteriori} probability that the plaintext is $x$, given that the ciphertext $y$ is observed, is identical to the \emph{a priori} probability that the plaintext is $x$.
 \end{definition}
+
+\begin{proposition}
+    The following are equivalent for a cryptosystem:
+    \begin{enumerate}
+        \item The cryptosystem has perfect secrecy.
+        \item For every $x \in \EuScript{P}$ and $y \in \EuScript{C}$ with $\pr(y) > 0$, we have $\pr(y | x) = \pr(y)$.
+        \item For every plaintext $x \in \EuScript{P}$ and every ciphertext $y \in \EuScript{C}$ with $\pr(y) > 0$, $\pr(x | y) = \pr(x)$, that is, observing $y$ does not change the probability distribution on the plaintext.
+    \end{enumerate}
+    In particular, the second condition says that the ciphertext distribution is \emph{independent of the plaintext}.
+\end{proposition}
+
+\begin{example}
+    The \emph{one-time pad} (OTP)\index{one-time pad} is the classic example of a cipher with perfect secrecy. Let $\EuScript{P} = \EuScript{K} = \EuScript{C} = \{0,1\}^n$ and define encryption as
+    \begin{align}
+        \enc_K(m) = m \oplus K
+    \end{align}
+    where the key $K$ is chosen uniformly at random from $\{0,1\}^n$ and used once. Given any ciphertext $y$ and any plaintext $x$, there is exactly one key $K = x \oplus y$ that maps $x$ to $y$. Since all keys are equally likely,
+    \begin{align}
+        \pr(C = y | M = x) = \pr(K = x \oplus y) = 2^{-n} = \pr(C = y)
+    \end{align}
+    so the a posteriori distribution equals the a priori distribution.
+\end{example}
+
+\begin{theorem}
+    (\emph{Shannon's theorem on perfect secrecy}) \index{Shannon's theorem} A cryptosystem $(\EuScript{P}, \EuScript{C}, \EuScript{K}, \EuScript{E}, \EuScript{D})$ with $|\EuScript{P}| = |\EuScript{C}| = |\EuScript{K}|$ has perfect secrecy if and only if for every $m \in \EuScript{P}$ and every $c \in \EuScript{C}$, there is a unique key $k \in \EuScript{K}$ such that $\enc_k(m) = c$.
+\end{theorem}
+
+\begin{proof}
+    If the condition holds, then for every $m$ and $c$, exactly one key maps $m$ to $c$, and since all keys are equally likely (each with probability $1/|\EuScript{K}|$), we get $\pr(C = c | M = m) = 1/|\EuScript{K}|$ for all $m$ and $c$, which implies $\pr(M = m | C = c) = \pr(M = m)$. The converse follows by Bayes' theorem.
+\end{proof}
+
+\begin{theorem}
+    (\emph{Shannon's lower bound on key size}) If a cryptosystem with $|\EuScript{K}|$ keys has perfect secrecy, then $|\EuScript{K}| \geq |\EuScript{P}|$. That is, the key must be at least as long as the message.
+\end{theorem}
+
+\begin{proof}
+    From Shannon's theorem, for each $m$ and $c$, there is a unique key $k$ with $\enc_k(m) = c$. Thus the encryption maps $\EuScript{K} \times \EuScript{P} \to \EuScript{C}$ must be at least surjective on the ciphertexts, so $|\EuScript{K}| \cdot |\EuScript{P}| \geq |\EuScript{C}|$. Since perfect secrecy also requires $|\EuScript{P}| = |\EuScript{C}|$, we get $|\EuScript{K}| \geq |\EuScript{P}|$.
+\end{proof}
+
+\begin{remark}
+    While perfect secrecy is theoretically achievable via the one-time pad, it is impractical for most applications because: (1) the key is as long as the message, (2) the key can never be reused, and (3) secure key distribution is required. In practice, \emph{computational security}\index{computational security}---where an adversary with bounded resources has negligible probability of breaking the system---is the standard. Under computational security, cryptography can achieve security with short keys, as in AES-128, RSA, and ECC.
+\end{remark}
+
+
 
 
 
@@ -1063,44 +2018,168 @@ formation about any future encrypted messages.
 
 
 
+\chapter{Random numbers}
+\label{ch:random}
+
+We have seen that many cryptographic constructions require the use of random numbers. For example:
+\begin{enumerate}
+    \item The key creation phase of virtually all cryptosystems requires the user to choose one or more random (prime) numbers. The same is true for creating keys in digital signature schemes.
+    \item The ElGamal public key cryptosystem uses a random number (ephemeral key) during the encryption process, and ElGamal-type digital signature schemes such as DSA and ECDSA use a random number for signing.
+    \item The NTRU public key cryptosystem also uses an ephemeral key during the encryption process.
+    \item The entire premise of probabilistic encryption schemes is to incorporate randomness into the encryption process.
+    \item Even completely deterministic cryptosystems such as RSA gain important security features when some randomness is incorporated into the plaintext
+\end{enumerate}
+
+Pseudo-Random Number Generators (PRNGs) are essential components in modern cryptographic systems, providing the necessary randomness for secure operations. Unlike true random number generators (TRNGs), which rely on physical processes to produce randomness, PRNGs use algorithms to generate sequences of numbers that approximate the properties of random numbers. In this section, we will explore the fundamentals of PRNGs, their design and implementation, evaluation criteria, and their role in cryptography.
+
+
+A PRNG is an algorithm that takes an initial value known as a seed and produces a sequence of numbers that appears random. The primary characteristics of a PRNG include:
+\begin{enumerate}
+    \item \emph{Deterministic}: Given the same seed, a PRNG will always produce the same sequence of numbers.
+    \item \emph{Periodicity}: PRNGs have a finite period after which the sequence will repeat. A good PRNG has a very long period, ideally longer than the number of values it is expected to generate.
+    \item \emph{Statistical Randomness}: The output should exhibit properties similar to random sequences, meaning that it should not show patterns or correlations over multiple outputs.
+\end{enumerate}
+
+PRNGs can be categorized based on their internal mechanisms:
+\begin{enumerate}
+    \item \emph{Linear Congruential Generators} (LCGs): LCGs generate a sequence using the formula:
+    \begin{align}
+        x_{n+1} = (ax_{n} + c) \pmod{m}
+    \end{align}
+    where $a, c$ and $m$ are constants, and $x_n$ is the current value. The Minimal Standard LCG has parameters $a = 16807$, $c=0$ and $m = 2^{31}-1$.
+    \item \emph{Mersenne Twister}: This is a widely used PRNG known for its long period of $2^{19937}-1$ and high-quality output. It utilizes a state vector and a series of bitwise operations, making it suitable for applications requiring large quantities of random numbers.
+    \item \emph{Cryptographically Secure PRNGs} (CSPRNGs): CSPRNGs are designed specifically for cryptographic applications, ensuring that the output cannot be feasibly predicted or reproduced, even if part of the state is known. Examples include the Fortuna algorithm and the Yarrow algorithm, which use entropy sources to provide robust randomness.
+\end{enumerate}
 
 
 
 \chapter{Hash Function}
 
-These are one-way function\footnote{How can we make it rigorous.}. We desire the following properties from these functions, (call an arbitrary one $f$):
-\begin{enumerate}
-    \item It can be applied to a block of data of any size.
-    \item It produces a fixed-length output.
-    \item The value $f(x)$ is relatively easy to compute for any given $x$.
-    \item \emph{One-way}: For any given value $h$, it is computationaly infeasible to find (any one of) its pre-image block $x$, that is such that $f(x) = h$.
-    \item \emph{Weak collision resistant}: For any given block $x$, it is computationally infeasible to find $x' \neq x$ such that $f(x) = f(x')$.
-    \item \emph{Strong collision resistant}: It is computationally infeasible to find any pair $(x, x')$ such that $f(x) = f(x')$.
-\end{enumerate} 
+Hash functions form an important cryptographic primitive. They take a message of arbitrary length as input and output a short digest, which should uniquely identify the input data. Cryptographic hash functions such as SHA-1 or MD5 are widely used in cryptography. In digital signature schemes, messages are first hashed and the hash value $h(m)$ is signed in place of the message $m$. Hash values are used to check the integrity of public keys. Pseudorandom bit strings are generated by hash functions. When used with a secret key, cryptographic hash functions become message authentication codes (MACs), the preferred tool in protocols like SSL and IPSec to check the integrity of a message and to authenticate the sender.
 
+\begin{definition}
+    A \emph{hash function} is a function that takes as input an arbitrarily long string of bits (called a \emph{message} $m$) and outputs a bit string of a fixed length $\ell$. Mathematically, a hash function is a function
+    \begin{align}
+        h: \{0,1\}^* &\longrightarrow \{0,1\}^\ell \\
+        m &\longmapsto h(m)
+    \end{align}
+    The length $\ell$ of the output is typically between 128 and 512 bits. 
+\end{definition}
 
-Useful applications of hash function:
-\begin{enumerate}
-    \item Human-readable method to compare/verify data.
-    \item Chaining events together - blockchain.
-    \item Digital signatures and message authentication codes.
-    \item Fundamental building block of many secure protocols.
-\end{enumerate}
+While formally a hash function maps arbitrary long messages, practical hash functions most often have a limit on the length of the input. However, these limits are so high (usually $2^{64}$ or more) that this is never a problem in practice.
+
+\section{Security properties}
+
+\begin{definition}
+    A hash function $h: \{0,1\}^* \longrightarrow \{0,1\}^\ell$ is called:
+    \begin{enumerate}
+        \item \emph{One-way}\index{pre-image resistance} or \emph{Pre-image resistant}: If for any given value $y$, it is computationally infeasible to find (any one of) its pre-image block $x$, that is such that $h(x) = y$.
+        \item \emph{Weak collision resistant}\index{second pre-image resistance} or \emph{Second pre-image resistant}: If for any given block $x$, it is computationally infeasible to find $x' \neq x$ such that $h(x) = h(x')$.
+        \item \emph{Strong collision resistant}\index{collision resistance} or just \emph{Collision resistant}: It is computationally infeasible to find \emph{any} pair $(x, x')$ with $x \neq x'$ such that $h(x) = h(x')$.
+    \end{enumerate}
+\end{definition}
+
+\begin{remark}
+    The three properties are ordered by strength:
+    \begin{align}
+        \text{collision resistance} \implies \text{second pre-image resistance} \implies \text{pre-image resistance}
+    \end{align}
+    The converse implications do not hold in general. A collision-resistant hash function is also second-pre-image resistant (for the natural distribution on messages) and pre-image resistant.
+\end{remark}
+
+\begin{remark}
+    By the \emph{pigeonhole principle}, no hash function $h: \{0,1\}^* \to \{0,1\}^\ell$ can be injective: collisions must exist for $\ell < \infty$. However, collision resistance requires that it is computationally infeasible to \emph{find} a collision, not that collisions do not exist. For a $\ell$-bit hash, the best generic attack requires $O(2^{\ell/2})$ evaluations (see the birthday attack below).
+\end{remark}
+
+\section{Birthday attack}
+
+\begin{theorem}
+    (\emph{Birthday paradox}) \index{birthday attack} If $h: \{0,1\}^n \to \{0,1\}^\ell$ is a random function, then one expects to find a collision after evaluating $h$ on approximately
+    \begin{align}
+        2^{\ell/2}
+    \end{align}
+    distinct inputs. More precisely, the expected number of evaluations to find a collision is approximately $\sqrt{\pi \cdot 2^\ell / 2}$.
+\end{theorem}
+
+\begin{proof}
+    The probability that $k$ uniformly random elements of a set of size $N = 2^\ell$ are all distinct is
+    \begin{align}
+        p(k) = \prod_{i=1}^{k-1} \left(1 - \frac{i}{N}\right) \approx \exp\left(-\frac{k^2}{2N}\right)
+    \end{align}
+    This falls below $\frac{1}{2}$ when $k \approx \sqrt{2\ln 2 \cdot N} \approx 1.177\sqrt{N}$, confirming that $O(2^{\ell/2})$ evaluations suffice.
+\end{proof}
+
+\begin{remark}
+    The birthday attack is a \emph{generic} attack, meaning it applies to \emph{any} hash function and does not exploit any algebraic structure. To achieve $n$-bit security against collision attacks, a hash function must have an output length of at least $2n$ bits. This is why MD5 (128-bit output) offers at most 64-bit collision resistance, which has been broken in practice.
+\end{remark}
+
+\section{Construction of hash functions}
+
+\subsection{Merkle--Damg\aa rd construction}
+
+\begin{definition}
+    The \emph{Merkle--Damg\aa rd construction}\index{Merkle--Damg\aa rd construction} transforms a fixed-length compression function
+    \begin{align}
+        f: \{0,1\}^\ell \times \{0,1\}^b \longrightarrow \{0,1\}^\ell
+    \end{align}
+    into a hash function $h$ that processes messages of arbitrary length. A message $m$ is padded to a multiple of $b$ bits, then split into blocks $m_1, m_2, \ldots, m_t$. Starting from a fixed initialization vector $IV$,
+    \begin{align}
+        H_0 &= IV, \quad H_i = f(H_{i-1}, m_i) \quad \text{for } i = 1, \ldots, t.
+    \end{align}
+    The final output is $h(m) = H_t$.
+\end{definition}
+
+MD5, SHA-1, and SHA-2 (SHA-224, SHA-256, SHA-384, SHA-512) all use the Merkle--Damg\aa rd construction with different compression functions and output lengths. The security of the Merkle--Damg\aa rd construction reduces to the security of the compression function: if $f$ is collision resistant, so is $h$.
+
+\subsection{Sponge construction}
+
+\begin{definition}
+    The \emph{sponge construction}\index{sponge construction} is an alternative design paradigm used in SHA-3. A sponge function operates on a state of $b = r + c$ bits, where $r$ is the \emph{bitrate} and $c$ is the \emph{capacity}. It proceeds in two phases:
+    \begin{enumerate}
+        \item \emph{Absorbing phase}: Message blocks are XORed into the rate portion $r$ of the state, and a fixed permutation $f$ is applied to the full $b$-bit state.
+        \item \emph{Squeezing phase}: Output bits are read from the rate portion, and the permutation is applied again to generate more output.
+    \end{enumerate}
+    The security of the sponge construction against collision attacks, pre-image attacks, and distinguishability attacks depends on the capacity $c$: generic attacks require approximately $O(2^{c/2})$ operations.
+\end{definition}
+
+\section{SHA-2 and SHA-3}
 
 \begin{example}
-    \emph{SHA-0}: Completely broken, collisions found.
-    \emph{SHA-1}: Implemented using Merkle-Damg\.ard construction. 
-    \emph{SHA-2}: No known flaws.
-    \emph{SHA-3}: Subset of Keccak. Implemented using sponge construction.
+    \emph{SHA-2}\index{SHA-2} (NIST, 2001) is a family of hash functions based on the Merkle--Damg\aa rd construction. The most common variant, \texttt{SHA-256}, produces a 256-bit digest. Its compression function operates on 512-bit message blocks using a 256-bit internal state, with 64 rounds of bitwise operations, modular additions, and Boolean functions. SHA-256 is widely used in TLS, Bitcoin (for proof-of-work), and digital signatures.
 \end{example}
 
+\begin{example}
+    \emph{SHA-3}\index{SHA-3} (NIST, 2015) is based on Keccak, a sponge construction. The standard specifies variants with capacities of 224, 256, 384, and 512 bits. The internal state of SHA-3 is a $5 \times 5$ array of 64-bit words (1600 bits total). Each round of the Keccak permutation applies five operations: $\theta$ (mixing of columns), $\rho$ (bitwise rotation of each lane), $\pi$ (permutation of lanes), $\chi$ (non-linear mixing of rows), and $\iota$ (addition of a round constant). SHA-3's sponge construction provides a natural defense against length-extension attacks that affect MD5 and SHA-1.
+\end{example}
 
+\section{HMAC: Hash-based message authentication}
+
+\begin{definition}
+    A \emph{Hash-based Message Authentication Code}\index{HMAC} (HMAC) is a keyed hash function that provides message authentication. Given a cryptographic hash function $h$ and a secret key $K$ of at least $\ell$ bits, HMAC is defined as
+    \begin{align}
+        \mathrm{HMAC}(K, m) = h\big( (K \oplus \mathrm{opad}) \| h((K \oplus \mathrm{ipad}) \| m) \big)
+    \end{align}
+    where $\mathrm{ipad} = \texttt{0x36}$ repeated and $\mathrm{opad} = \texttt{0x5C}$ repeated, each block matching the hash function's internal block size.
+\end{definition}
+
+\begin{proposition}
+    HMAC is secure (in the sense of a pseudorandom function) as long as the underlying hash function $h$ is a secure compression function with respect to domain extension. In particular, HMAC-SHA-256 provides 128-bit security against existential forgery under key recovery.
+\end{proposition}
+
+\begin{remark}
+    HMAC is the basis of the \emph{keyed-Hash Message Authentication Code} standardized in FIPS 198. It is used extensively in TLS, IPSec, SSH, and other secure protocols.
+\end{remark}
+
+\section{MD5}
+
+The Message Digest (version 5) algorithm (MD5) is a widely used hash function producing a 128-bit hash value. MD5 was designed by Ronald Rivest in 1991 to replace an earlier hash function MD4, and was specified in 1992 as RFC 1321. MD5 processes 512-bit blocks using four rounds of 16 steps each, with round functions based on nonlinear Boolean operations.
 
 \begin{example}
-    \emph{MD5}: Completely broken, collisions found.
+    MD5 is considered \emph{completely broken}\index{MD5!broken} for collision resistance: Wang et al.\ (2004) found collisions in seconds on a standard PC. MD5 collision exploits (e.g., the Flame malware, 2012) demonstrate that MD5 must not be used for security-critical applications. However, MD5 is still used for non-security purposes such as checksums for data integrity.
 \end{example}
 
 \chapter{Codes}
+\label{ch:codes}
 
 We used the reference \cite{zheng2022modern} for this chapter. Let $n$ be a positive integer, $\mathbb{F}_q^n$ is an $n$-dimensional linear space over $\mathbb{F}_q$ , also called \emph{codeword space}\index{codeword space}. A vector $\mathbf{x} = (x_1, x_2, \ldots , x_n)$ in $\mathbb{F}_q^n$ is called a \emph{codeword of length $n$}. For convenience, a codeword $\mathbf{x}$, we write as $\mathbf{x} = x_1x_2\cdots x_n$, each $x_i \in \mathbb{F}_q$ is called a \emph{character}. We denote by $0 = (0,0, \ldots, 0)$.
 Given codewords $\mathbf{x} = x_1 x_2 \cdots x_n$ and $\mathbf{y} = y_1 y_2 \cdots y_n$, we define the \emph{Hamming distance}\index{Hamming distance} $d(\mathbf{x}, \mathbf{y})$ by 
@@ -1129,25 +2208,307 @@ that is, the Hamming distance between $\mathbf{x}$ and $0$. The following proper
 \end{proposition}
 
 \begin{proposition}
-    Let $\mathbf{x}, \mathbf{y} \in \mathbb{F}_q^n$ be two codewords, then
+    (\emph{Triangle inequality}) Let $\mathbf{x}, \mathbf{y} \in \mathbb{F}_q^n$ be two codewords, then
     \begin{align}
         \wt(\mathbf{x} \pm \mathbf{y}) \leq \wt(\mathbf{x}) + \wt(\mathbf{y})
     \end{align}
+    Equivalently, $d(\mathbf{x}, \mathbf{z}) \leq d(\mathbf{x}, \mathbf{y}) + d(\mathbf{y}, \mathbf{z})$, so the Hamming distance is a metric.
 \end{proposition}
 
 \begin{definition}
     A \emph{linear code}\index{linear code} $C$ is a vector subspace of $\mathbb{F}_q^n$.
 \end{definition}
 
+\begin{definition}
+    The \emph{minimum distance}\index{minimum distance} of a non-zero linear code $C$ is
+    \begin{align}
+        d_{\min}(C) \defn \min \{ \wt(\mathbf{x}) : \mathbf{x} \in C, \mathbf{x} \neq \mathbf{0} \}
+    \end{align}
+    A linear code of length $n$, dimension $k$, and minimum distance $d$ is called an $[n, k, d]$ code.
+\end{definition}
+
+\begin{definition}
+    Let $C \subseteq \mathbb{F}_q^n$ be a linear code. A matrix $G \in \mathrm{Mat}_{k \times n}(\mathbb{F}_q)$ whose rows form a basis of $C$ is called a \emph{generator matrix}\index{generator matrix}. Encoding maps a message $\mathbf{m} \in \mathbb{F}_q^k$ to the codeword $\mathbf{c} = \mathbf{m} G \in \mathbb{F}_q^n$. A matrix $H \in \mathrm{Mat}_{(n-k) \times n}(\mathbb{F}_q)$ satisfying $H G^T = 0$ is called a \emph{parity-check matrix}\index{parity-check matrix}.
+\end{definition}
+
+\begin{proposition}
+    The syndrome $\mathbf{s} = H \mathbf{c}^T$ of a codeword $\mathbf{c}$ is zero. If a received word $\mathbf{y} \in \mathbb{F}_q^n$ differs from the transmitted codeword $\mathbf{c}$ by an error vector $\mathbf{e} = \mathbf{y} - \mathbf{c}$, then $H \mathbf{y}^T = H\mathbf{e}^T$, which is the \emph{syndrome} of the error. The syndrome depends only on the error, not on the codeword.
+\end{proposition}
 
 \section{Error Correcting Codes}
+
+\begin{definition}
+    A code $C$ with minimum distance $d$ can \emph{correct} up to
+    \begin{align}
+        t = \left\lfloor \frac{d - 1}{2} \right\rfloor
+    \end{align}
+    errors. It can \emph{detect} up to $d - 1$ errors.
+\end{definition}
+
+\begin{proof}
+    (Idea). If a codeword is transmitted and up to $t$ errors occur, the received word lies strictly closer (in Hamming distance) to the originally transmitted codeword than to any other codeword. Hence nearest-neighbour decoding (finding the unique codeword minimizing distance to the received word) recovers the correct codeword. For $d - 1$ errors, no ambiguity arises because no two codewords can both be within $d - 1$ of the same received word.
+\end{proof}
+
+\begin{theorem}
+    (\emph{Singleton bound}) For any $[n, k, d]$ code,
+    \begin{align}
+        d \leq n - k + 1
+    \end{align}
+    A code achieving this bound is called \emph{maximum distance separable}\index{maximum distance separable} (MDS). Reed--Solomon codes, discussed below, are MDS.
+\end{theorem}
+
+\begin{example}
+    The \emph{repetition code} encodes the message $\mathbf{0}$ as $\mathbf{000\cdots 0}$ and $\mathbf{1}$ as $\mathbf{111\cdots 1}$ (repeating $n$ times), giving a $[n, 1, n]$ code. It can correct $\lfloor (n-1)/2 \rfloor$ errors, but has terrible rate $1/n$.
+\end{example}
+
 \section{Hamming Codes}
+
+\begin{definition}
+    For $r \geq 2$, the \emph{Hamming code}\index{Hamming code} $\mathrm{Ham}(r, 2)$ over $\mathbb{F}_2$ is the $[n, k, d] = [2^r - 1, 2^r - 1 - r, 3]$ code whose parity-check matrix $H$ has as its columns all $2^r - 1$ distinct non-zero vectors of $\mathbb{F}_2^r$.
+\end{definition}
+
+\begin{theorem}
+    The Hamming code $\mathrm{Ham}(r, 2)$ has minimum distance $3$ and hence corrects all single-bit errors. It is a \emph{perfect code}\index{perfect code}: the spheres of radius $1$ around codewords exactly partition $\mathbb{F}_2^n$ without overlap or gap.
+\end{theorem}
+
+\begin{example}
+    The $[7, 4, 3]$ Hamming code has generator and parity-check matrices (using the standard form):
+    \begin{align}
+        H &= \begin{pmatrix}
+            0 & 0 & 0 & 1 & 1 & 1 & 1 \\
+            0 & 1 & 1 & 0 & 0 & 1 & 1 \\
+            1 & 0 & 1 & 0 & 1 & 0 & 1
+        \end{pmatrix}
+    \end{align}
+    The syndrome of a received word is the column of $H$ corresponding to the errored position, which allows single-error correction by syndrome decoding.
+\end{example}
+
 \section{Polynomial Codes}
+
+\begin{definition}
+    Let $\Bbbk$ be a field. A \emph{cyclic code}\index{cyclic code} is a linear code $C \subseteq \mathbb{F}_q^n$ that is closed under cyclic shifts: if $(c_0, c_1, \ldots, c_{n-1}) \in C$, then $(c_{n-1}, c_0, \ldots, c_{n-2}) \in C$. Via the identification
+    \begin{align}
+        \mathbb{F}_q^n \longleftrightarrow \frac{\mathbb{F}_q[x]}{\langle x^n - 1 \rangle}, \quad (c_0, c_1, \ldots, c_{n-1}) \longmapsto c_0 + c_1 x + \cdots + c_{n-1} x^{n-1}
+    \end{align}
+    a cyclic code corresponds to an ideal in the quotient ring, and is generated by a single polynomial $g(x)$ dividing $x^n - 1$.
+\end{definition}
+
+\begin{proposition}
+    Every cyclic code $C$ of length $n$ over $\mathbb{F}_q$ is generated by a unique monic polynomial $g(x)$ of minimal degree dividing $x^n - 1$. The code consists of the multiples $g(x) \cdot m(x)$ where $\deg(m) \leq n - \deg(g) - 1$, and has dimension $n - \deg(g)$.
+\end{proposition}
+
+\begin{example}
+    The \emph{CRC (Cyclic Redundancy Check)}\index{CRC} used in Ethernet, Wi-Fi, and many storage protocols is a form of polynomial code. For CRC-32, the generator polynomial is
+    \begin{align}
+        g(x) = x^{32} + x^{26} + x^{23} + x^{22} + x^{16} + x^{12} + x^{11} + x^{10} + x^8 + x^7 + x^5 + x^4 + x^2 + x + 1
+    \end{align}
+    CRC codes detect all single-bit and double-bit errors (with suitable generator choice), all odd-weight errors, and all bursts of length at most the degree of $g$.
+\end{example}
+
 \section{Reed-Solomon (RS) Codes}
+
+\begin{definition}
+    Let $\mathbb{F}_q$ be a finite field and fix a positive integer $k < n$. A \emph{Reed--Solomon code}\index{Reed--Solomon code} $\mathrm{RS}(n, k)$ over $\mathbb{F}_q$ is defined as follows. Choose $n$ distinct evaluation points $\alpha_1, \alpha_2, \ldots, \alpha_n \in \mathbb{F}_q$. Each codeword is indexed by a message polynomial $m(x) \in \mathbb{F}_q[x]$ with $\deg(m) < k$, and the codeword for $m$ is the evaluations
+    \begin{align}
+        \mathbf{c} = (m(\alpha_1), m(\alpha_2), \ldots, m(\alpha_n))
+    \end{align}
+\end{definition}
+
+\begin{theorem}
+    The Reed--Solomon code $\mathrm{RS}(n, k)$ over $\mathbb{F}_q$ is an $[n, k, n - k + 1]$ code, hence is MDS (achieves the Singleton bound). It can correct up to $\lfloor (n-k)/2 \rfloor$ errors and up to $n - k$ erasures\footnote{An \emph{erasure} is an error in a known position.}. We must have $n \leq q$.
+\end{theorem}
+
+\begin{remark}
+    Reed--Solomon codes are widely used in:
+    \begin{itemize}
+        \item Optical media: CDs, DVDs, and Blu-ray discs (Cross-interleaved RS codes).
+        \item QR codes, which use RS codes with parameters $(255, 223)$ over $\mathbb{F}_{256}$.
+        \item Satellite communication and digital television (DVB).
+        \item RAID 6 storage systems, which use RS codes to recover from two simultaneous disk failures.
+    \end{itemize}
+\end{remark}
+
+\begin{minted}{python}
+def rs_encode(msg, alpha, q):
+    """Encode a message using a Reed-Solomon code over GF(q).
+    msg: list of field elements (as integers) of length k.
+    alpha: list of n distinct evaluation points."""
+    k = len(msg)
+    n = len(alpha)
+
+    def eval_poly(coeffs, x):
+        # Horner's method over GF(q)
+        result = 0
+        for c in reversed(coeffs):
+            result = (result * x + c) % q
+        return result
+
+    return [eval_poly(msg, a) for a in alpha]
+
+# RS(7, 3) over GF(7): n=7 evaluation points, k=3 message symbols
+q, alpha = 7, range(7)
+msg = [1, 2, 3]  # message polynomial: 1 + 2x + 3x^2
+codeword = rs_encode(msg, alpha, q)
+print(f"Codeword: {codeword}")
+\end{minted}
 
 
 \chapter{Complexity}
-Big Oh, Big Omega, Big Theta
+\label{ch:complexity}
+
+Complexity theory provides the mathematical framework for reasoning about the
+efficiency of algorithms and the hardness of problems. It is foundational to
+modern cryptography: the security of virtually all public-key cryptosystems
+rests on the assumed \emph{computational hardness} of certain mathematical
+problems (factoring, discrete logarithm, etc.). In this chapter we develop the
+asymptotic notation and complexity classes needed throughout the book.
+
+\section{Asymptotic notation}
+
+Asymptotic notation describes how the resource requirements (typically time or
+space) of an algorithm grow as a function of the input size $n$.
+
+\begin{definition}
+    Let $f, g: \mathbb{N} \longrightarrow \mathbb{R}_{>0}$.
+    \begin{enumerate}
+        \item $f(n) = O(g(n))$ if there exist constants $c > 0$ and $N \in \mathbb{N}$ such that $f(n) \leq c \cdot g(n)$ for all $n \geq N$. We say $g$ is an \emph{asymptotic upper bound}\index{Big Oh} for $f$.
+        \item $f(n) = \Omega(g(n))$ if there exist constants $c > 0$ and $N \in \mathbb{N}$ such that $f(n) \geq c \cdot g(n)$ for all $n \geq N$. We say $g$ is an \emph{asymptotic lower bound}\index{Big Omega} for $f$.
+        \item $f(n) = \Theta(g(n))$ if $f(n) = O(g(n))$ and $f(n) = \Omega(g(n))$. We say $f$ and $g$ have the same \emph{asymptotic growth rate}\index{Big Theta}.
+        \item $f(n) = o(g(n))$ if $\lim_{n \to \infty} \frac{f(n)}{g(n)} = 0$. We say $f$ is asymptotically negligible compared to $g$.
+    \end{enumerate}
+\end{definition}
+
+\begin{example}
+    \begin{itemize}
+        \item $3n^2 + 7n + 12 = O(n^2)$, indeed $= \Theta(n^2)$.
+        \item $\log(n!) = \Theta(n \log n)$ (follows from Stirling's approximation).
+        \item $2^n \neq O(n^k)$ for any constant $k$ (exponential growth dominates polynomial).
+        \item $\log_{10}(n) = O(\log_2 n)$---logarithms of different bases differ by a constant factor, so the base is often omitted.
+    \end{itemize}
+\end{example}
+
+\begin{proposition}
+    The standard operations on Big-O notation are:
+    \begin{itemize}
+        \item Sum: $O(f) + O(g) = O(\max\{f, g\})$.
+        \item Product: $O(f) \cdot O(g) = O(f \cdot g)$.
+        \item Transitivity: if $f = O(g)$ and $g = O(h)$, then $f = O(h)$.
+        \item Constant factors are absorbed: $O(c f) = O(f)$.
+    \end{itemize}
+\end{proposition}
+
+\section{Algorithms and problems}
+
+\begin{definition}
+    An \emph{algorithm}\index{algorithm} is a finite sequence of well-defined instructions for computing a function or deciding a property. The \emph{running time} of an algorithm on input of size $n$ is the number of elementary (bit) operations it performs.
+\end{definition}
+
+\begin{definition}
+    A problem is said to be in \emph{polynomial time}\index{polynomial time} if there exists an algorithm that solves it in $O(n^c)$ time for some constant $c$, where $n$ is the bit-length of the input. Problems solvable in polynomial time are considered \emph{efficiently solvable} or \emph{tractable}.
+\end{definition}
+
+\begin{example}
+    \emph{Integer multiplication} of two $n$-bit numbers takes $O(n^2)$ time with the grade-school algorithm, and $O(n \log n \log\log n)$ with the Schönhage--Strassen / FFT-based algorithms. \emph{Modular exponentiation} $a^b \bmod m$ can be computed in $O(n^3)$ time using the square-and-multiply method where $n = \log_2 m$; this is the building block for RSA and Diffie--Hellman.
+\end{example}
+
+\begin{proposition}
+    \emph{Square-and-multiply (exponentiation by squaring):} To compute $g^x \bmod p$ where $x$ has bit-length $n$, write $x = \sum x_i 2^i$ in binary. Then
+    \begin{align}
+        g^x = g^{x_{n-1} 2^{n-1}} \cdot g^{x_{n-2} 2^{n-2}} \cdots g^{x_1 2} \cdot g^{x_0}
+    \end{align}
+    Computed by repeated squaring requiring $n$ squarings and at most $n$ multiplications, for a total of $O(n)$ group operations.
+\end{proposition}
+
+\section{Complexity classes}
+
+\begin{definition}
+    \begin{enumerate}
+        \item \textbf{P}\index{P} is the class of decision problems solvable in polynomial time by a deterministic algorithm.
+        \item \textbf{NP}\index{NP} (Nondeterministic Polynomial) is the class of decision problems for which a solution can be \emph{verified} in polynomial time, given a certificate.
+        \item \textbf{coNP} is the class of decision problems whose complements are in \textbf{NP}.
+        \item \textbf{BPP} (Bounded-error Probabilistic Polynomial) is the class of decision problems solvable by a probabilistic polynomial-time algorithm with error probability at most $\tfrac{1}{3}$.
+        \item \textbf{ZPP} (Zero-error Probabilistic Polynomial) is the class solvable by a randomized algorithm that always gives the correct answer and runs in expected polynomial time.
+        \item \textbf{PSPACE} is the class of decision problems solvable using polynomial space (regardless of time).
+    \end{enumerate}
+\end{definition}
+
+\begin{theorem}
+    The following inclusions are known:
+    \begin{align}
+        \mathbf{P} \subseteq \mathbf{NP} \subseteq \mathbf{PSPACE}, \quad \mathbf{P} \subseteq \mathbf{BPP}, \quad \mathbf{NP} \subseteq \textbf{PSPACE}
+    \end{align}
+    Whether $\mathbf{P} = \mathbf{NP}$ is the most famous open problem in computer science.
+\end{theorem}
+
+\begin{definition}
+    A decision problem $L$ is said to be \emph{NP-complete}\index{NP-complete} if:
+    \begin{enumerate}
+        \item $L \in \mathbf{NP}$, and
+        \item every problem in \textbf{NP} can be reduced to $L$ in polynomial time (i.e., $L$ is \emph{NP-hard}).
+    \end{enumerate}
+    If any NP-complete problem were shown to be in \textbf{P}, then $\mathbf{P} = \mathbf{NP}$ would follow.
+\end{definition}
+
+\begin{theorem}
+    (\emph{Cook--Levin theorem}) The Boolean satisfiability problem (SAT) is NP-complete. Consequently, SAT, 3-SAT, the Hamiltonian cycle problem, the traveling salesman problem, and the subset sum problem are all NP-complete.
+\end{theorem}
+
+\section{Relevance to cryptography}
+
+\begin{remark}
+    Cryptography is built on the assumption that certain problems are hard---but they are typically \emph{not} NP-complete. In fact, problems used in cryptography (factoring, discrete logarithm, ECDLP) are believed to lie in the intersection $\mathbf{NP} \cap \mathbf{coNP}$ and are generally believed \emph{not} to be NP-complete.\footnote{If a problem in $\mathbf{NP} \cap \mathbf{coNP}$ were NP-complete, then $\mathbf{NP} = \mathbf{coNP}$, which is believed false.} This means that:
+    \begin{itemize}
+        \item These problems have efficient (randomized) algorithms on average instances, but not on the worst-case instances that are specifically engineered to be difficult.
+        \item The hardness is \emph{average-case} hardness for a specific distribution of instances, not worst-case hardness.
+        \item One-way functions (see below) exist if and only if certain average-case hardness assumptions hold.
+    \end{itemize}
+\end{remark}
+
+\begin{definition}
+    A function $f: \{0,1\}^* \longrightarrow \{0,1\}^*$ is called a \emph{one-way function}\index{one-way function} if:
+    \begin{enumerate}
+        \item $f$ is computable in polynomial time, and
+        \item for every probabilistic polynomial-time adversary $\mathcal{A}$, the probability that $\mathcal{A}(f(x))$ outputs some $x'$ with $f(x') = f(x)$ (when $x$ is chosen uniformly) is \emph{negligible}\index{negligible function}, i.e., smaller than $1/n^c$ for every constant $c$ and sufficiently large $n$.
+    \end{enumerate}
+\end{definition}
+
+\begin{example}
+    The following are \emph{candidate} one-way functions (their one-wayness is conjectured but not proved):
+    \begin{itemize}
+        \item \emph{Integer multiplication}: Given $p, q$, computing $pq$ is easy, but given $N = pq$, factoring back is believed hard (basis of RSA).
+        \item \emph{Modular exponentiation}: Given $g, x, p$, computing $g^x \bmod p$ is easy, but given $g, p, g^x$, finding $x$ (the discrete logarithm) is believed hard.
+        \item \emph{SHA-256}: A keyed\/unkeyed hash function believed to be one-way.
+    \end{itemize}
+\end{example}
+
+\begin{remark}
+    The central open question in cryptography is whether one-way functions exist unconditionally. If $\mathbf{P} = \mathbf{NP}$, then no one-way functions exist, and essentially all of public-key cryptography would collapse. Conversely, the existence of one-way functions is strictly stronger than $\mathbf{P} \neq \mathbf{NP}$, since it implies average-case hardness of some problem.
+\end{remark}
+
+\section{Concrete security parameters}
+
+In practice, the security parameter $n$ determines the key size. The following
+table lists the approximate key sizes for equivalent security levels (as
+recommended by NIST):
+
+\begin{center}
+\begin{tabular}{lccc}
+    \toprule
+    Security & RSA / DL & ECC & Symmetric \\
+    (bits)   & (modulus) & (curve) & (AES) \\
+    \midrule
+    80    & 1024 & 160 & 80 \\
+    112   & 2048 & 224 & 112 \\
+    128   & 3072 & 256 & 128 \\
+    192   & 7680 & 384 & 192 \\
+    256   & 15360 & 521 & 256 \\
+    \bottomrule
+\end{tabular}
+\end{center}
+
+A scheme with $n$-bit security means that the best known attack requires
+approximately $2^n$ operations---the same as a brute-force key search on an
+$n$-bit symmetric key.
 
 
 
@@ -1167,12 +2528,11 @@ Big Oh, Big Omega, Big Theta
 
 % \cite{adamson2012set}
 
-% \nocite{*}
 
 
-\bibliography{../Bibliography/References}
-\bibliographystyle{amsalpha}
 
+
+\printbibliography
 \printindex
 
 

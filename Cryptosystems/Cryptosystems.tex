@@ -1,13 +1,17 @@
 \documentclass[a4paper, 12pt]{book} % changed from scrbook
 % not using \documentclass[a4paper, twoside=semi]{scrreprt} anymore
+\usepackage{csquotes}
 
-\usepackage{InfoSec}
+\usepackage{../Files/Style/InfoSec}
+\usepackage{cryptocode}
+\usepackage{bytefield}
+\usepackage{msc}
 
-\definecolor{bg}{RGB}{20,20,20}
-\definecolor{fg}{RGB}{220,220,220}
-\definecolor{keyword}{RGB}{130,170,255}
-\definecolor{comment}{RGB}{120,120,120}
-\definecolor{string}{RGB}{255,200,120}
+% \definecolor{bg}{RGB}{0.39,0.27,0.27}
+% \definecolor{fg}{RGB}{220,220,220}
+% \definecolor{keyword}{RGB}{130,170,255}
+% \definecolor{comment}{RGB}{120,120,120}
+% \definecolor{string}{RGB}{255,200,120}
 
 \lstdefinestyle{darkbash}{
     backgroundcolor=\color{bg},
@@ -118,36 +122,35 @@
 
 
 
+
+
+\chapter{Introduction}
+
+
+Good references are \cite{katz2007introduction, rosulek2021joy, boneh2020graduate}.
+
+General references are \cite{pardo2013introduction, sharp2023introduction, paar2024understanding, delfs2002introduction, wu2016introduction, schwenk2022guide, kizza2005computer, manz2022encrypt, stinson2018cryptography, nielson2023discovering, von2015cryptoschool, klima2012cryptology, stinson1995introduction, stallings2006cryptography, dong2012cryptographic, de2022cryptography, easttom2019computer, van2021computer, konheim2007computer, sheikh2020comptia, banoth2023classical, vaudenay2006classical}
+
+Cryptology consists of cryptography (protecting information) and cryptanalysis (breaking cryptography).
+
 \emph{Cryptography} is the practice and study of techniques for secure communication in the presence of adverse third parties. \emph{Encryption} refers to the process of changing ordinary text (plaintext) into unintelligible text (ciphertext). \emph{Decryption} is the reverse.
 
-% references: 
-% 1. Introduction to Cryptography with Maple by Jose Luis Gomez Pardo
-% 2. Introduction to Cybersecurity by Robin Sharp
-% 3. Understanding Cryptography by Christof Paar, Jan Pelzl and Tim Guneysu
-% 4. Introduction to Cryptography by Hans Delfs and Helmut Knebl
-% 5. Introduction to Computer Networks and Cybersecurity by Chwan-Hwa Wu and J.David Irwin
-% 6. Handbook of Financial Cryptography and Security by Biurton Rosenberg
-% 7. Guide to Internet Cryptography by Jorg Schwenk
-% 8. Guide to Computer Network Security by Joseph Migga Kizza
-% 9. Encrypt, Sign, Attack by Olaf Manz
-% 10. Cryptograpy Theory and Practice by Douglas R.Stinson
-% 11. Discovering Cybersecurity by Seth James Nielson
-% 12. CryptoSchool by Joachim von zur Gathen copy
-% 13. Cryptology by Richard Klima and Neil Sigmon
-% 14. Cryptography by Douglas R.Stinson and Maura B.Paterson
-% 15. Cryptography and Network Security by William Stallings 
-% 16. Cryptographic Protocol by Ling Dong and Kefei Chen
-% 17. Cryptography and Network Security by Marcelo Sampaio de Alencar
-% 18. Computer Security Fundamentals by Chuck Easttom
-% 19. Computer Security and the Internet by Paul C.van Oorschot
-% 20. Computer Security and Cryptography by Alan G.Konheim.pdf
-% 21. CompTIA Security Certification Study Guide by Ahmed F.Sheikh
-% 22. Classical and Modern Cryptography for Beginners by Rajkumar Banoth and Rekha Regar
-% 23. A Classical Introduction to Cryptography by Serge Vaudenay
+
+
+Cryptography uses mathematical algorithms and protocols to ensure the confidentiality, integrity, and authenticity of information. Today, cryptographic principles and systems form an integral part of almost all online activity. This course is an introduction to the fundamentals of modern cryptography. You will learn about cryptography's formal approach to security. You will learn about cryptographic primitives, and you will learn how those primitives can be used.
 
 
 
-\chapter{Definition}
+Cryptography is thus used to achieve three main security objectives:
+\begin{enumerate}
+    \item Confidentiality: With encryption, it is possible to protect the confidentiality of messages so that only the owners of specific cryptographic keys can read them.
+    \item Integrity: Messages that are secured with a valid Message Authentication Code (MAC) are guaranteed not to have been altered in transit through the Internet (message integrity).
+    \item Authenticity: Messages secured with a valid digital signature can only originate from a sender who knows the corresponding private key (message authentication). The authenticity of the communicating peers can be verified by appropriate authentication protocols (entity authentication).
+\end{enumerate}
+
+
+
+\section{Definition}
 
 Let $\Sigma_1, \Sigma_2$ be alphabets \footnote{Plain and cipher alphabet.}, and let $\ell_1, \ell_2$ be positive integers. We are interested in functions of the form $f: \Sigma_1^{\ell_1} \longrightarrow \Sigma_2^{\ell_2}$
 
@@ -157,16 +160,16 @@ Let $\Sigma_1, \Sigma_2$ be alphabets \footnote{Plain and cipher alphabet.}, and
         \item The collection $\EuScript{P} \subseteq \Sigma_1^{\ell_1}$ is the set of all possible \emph{plain texts}, called the \emph{plaintext space}. It consists of elementary strings that are to be encrypted as a basic unit.
         \item The collection $\EuScript{C}  \subseteq \Sigma_2^{\ell_2}$ is the set of all possible \emph{cipher texts}, called the \emph{ciphertext space}.
         \item The collection $\EuScript{K}$, called the \emph{key space}, is the set of all possible \emph{keys}. This may come along with a (\emph{keystream}) generator $g: \EuScript{K} \longrightarrow \Sigma^\infty$, where $\Sigma$ is the keystream alphabet.
-        \item The collection $\EuScript{E} = (e_k: \EuScript{P} \rightarrow \EuScript{C})_{k \in \EuScript{K}}$\footnote{In case of haveing a keystream generator, the indexing set of encryption-decryption maps is the keystream space. So we sometime have abuse of notation where $\EuScript{K}$ means $\Sigma^{\infty}$.} is a finite set of \emph{encryption rules} $e_k$, that are functions given by polynomial-time algorithms.
-        \item The collection $\EuScript{D} = (d_{k'}: \EuScript{C} \rightarrow \EuScript{P} )_{k' \in \EuScript{K}}$ is a finite set of \emph{decryption rules}, that are functions given by polynomial-time algorithms.
+        \item The collection $\EuScript{E} = (\enc_k: \EuScript{P} \rightarrow \EuScript{C})_{k \in \EuScript{K}}$\footnote{In case of haveing a keystream generator, the indexing set of encryption-decryption maps is the keystream space. So we sometime have abuse of notation where $\EuScript{K}$ means $\Sigma^{\infty}$.} is a finite set of \emph{encryption rules} $\enc_k$, that are functions given by polynomial-time algorithms.
+        \item The collection $\EuScript{D} = (\dec_{k'}: \EuScript{C} \rightarrow \EuScript{P} )_{k' \in \EuScript{K}}$ is a finite set of \emph{decryption rules} $\dec_{k'}$, that are functions given by polynomial-time algorithms.
     \end{enumerate}
     such that for each \emph{encryption key} $k \in \EuScript{K}$, there exists a \emph{decryption key} $k' \in \EuScript{K}$, which satisfies
     \begin{align}
-        d_{k'} \circ e_k \equiv 1_{\EuScript{P}}
+        \dec_{k'} \circ \enc_k \equiv 1_{\EuScript{P}}
     \end{align}
     That is, 
     \begin{align}
-        d_{k'}(e_k(x)) = x
+        \dec_{k'}(\enc_k(x)) = x
     \end{align}
     for all $x \in \EuScript{P}$.
 \end{definition}
@@ -176,24 +179,93 @@ The plaintext and ciphertext messages are elements of $\EuScript{P}^*$ and $\EuS
 \begin{align}
     \mathbf{x} = x_1 x_2 \cdots x_{j}  \in \EuScript{P}^* \footnotemark 
 \end{align}
-and a cryptosystem $\mathscr{C}$, with encryption maps $e_k$, one can encrypt $\mathbf{x}$ with a key $k$ (as in \emph{Block cipher}\index{Block cipher}) by \footnotetext{These $x_i$ are in $\EuScript{P}$.}
+and a cryptosystem $\mathscr{C}$, with encryption maps $e_k$, one can encrypt $\mathbf{x}$ with a key $k$ (as in \emph{Block cipher}\index{Block cipher}) by \footnotetext{These $x_i$ are either in $\EuScript{P}$ or in $\EuScript{P}^*$ themselves.}
 \begin{align}
-    \mathbf{y} = e_k(x_1) e_k(x_2) \cdots e_k(x_{j})
+    \mathbf{y} = \enc_k(x_1) \enc_k(x_2) \cdots \enc_k(x_{j})
 \end{align}
 or with a key stream $k_1k_2\cdots $ (as in \emph{Stream cipher}\index{Stream cipher})  by
 \begin{align}
-    \mathbf{y} = e_{k_1}(x_1) e_{k_2}(x_2) \cdots e_{k_j}(x_j)
+    \mathbf{y} = \enc_{k_1}(x_1) \enc_{k_2}(x_2) \cdots \enc_{k_j}(x_j)
 \end{align}
 
 If the encryption key $k$ always equal to the decryption key $k'$ or if $k'$ is easily computed from $k$, then the cryptosystem is called \emph{symmetric}. If the encyrption and decryption keys $k, k'$ are not equal and computation of $k'$ is infeasible from $k$, then the cryptosystem is called \emph{assymetric}.
 
 
 
+\section{History}
+
+Checkout Babington Plot, 1586.
 
 
 
 
-\section{Shift cipher}
+
+\chapter{Stream Cipher and Block Cipher}
+
+
+\begin{table}[ht]
+    \centering
+    \caption{Comparison of Stream Ciphers and Block Ciphers}
+    \label{tab:stream-vs-block}
+    \begin{tabular}{p{0.25\textwidth} p{0.33\textwidth} p{0.33\textwidth}}
+        \hline
+        \textbf{Feature} & \textbf{Stream Cipher} & \textbf{Block Cipher} \\
+        \hline
+        
+        Unit of encryption
+        & Encrypts data one bit or byte at a time
+        & Encrypts data in fixed-size blocks \\[0.5em]
+        
+        Block size
+        & No fixed block size
+        & Fixed block size, e.g., 128 bits \\[0.5em]
+        
+        Key
+        & Used to generate a pseudorandom keystream
+        & Used directly in the encryption transformation \\[0.5em]
+        
+        Encryption
+        & Plaintext is combined with the keystream, typically using XOR
+        & Each plaintext block is transformed into a ciphertext block \\[0.5em]
+        
+        Padding
+        & Generally not required
+        & May be required depending on the mode of operation \\[0.5em]
+        
+        Error propagation
+        & Usually affects only the corresponding bit/byte
+        & Depends on the mode of operation; errors may affect multiple blocks \\[0.5em]
+        
+        Speed
+        & Generally fast and suitable for streaming data
+        & Generally fast, especially with hardware acceleration \\[0.5em]
+        
+        Applications
+        & Real-time communication, audio/video streams
+        & File encryption, disk encryption, network protocols \\[0.5em]
+        
+        Examples
+        & ChaCha20, Salsa20
+        & AES, 3DES \\[0.5em]
+        
+        \hline
+    \end{tabular}
+\end{table}
+
+
+\section{Electronic CodeBook (ECB)}
+
+\section{Cipher Block Chaining (CBC)}
+
+\section{Propogating Cipher Block Chaining (PCBC)}
+
+\section{Cipher FeedBack (CFB)}
+
+\section{Output FeedBack (OFB)}
+
+\section{CounTeR (CTR)}
+
+\chapter{Shift cipher}
 \begin{definition}
     Let $G$ be an additive group (for example, $\mathbb{Z}$ or $\mathbb{Z}_n$). Let $\EuScript{P} = \EuScript{C} = G$ and $\EuScript{K}$ be a subset of $G$. Recall that $G$ acts on itself via translation (shift) and so does any subset, in particular $\EuScript{K}$, acts on $G$. We can define a \emph{shift cipher}, by setting:
     \begin{align}
@@ -247,9 +319,7 @@ If the encryption key $k$ always equal to the decryption key $k'$ or if $k'$ is 
 
 
 
-
-
-\section{Substitution cipher}
+\chapter{Substitution cipher}
 
 \begin{definition}
     If $\EuScript{P} = \EuScript{C}$ is a set, say $X$ and $\EuScript{K}$ $= \mathfrak{S}(X)$ that acts on $S$ via permutation, then we can define a \emph{substitution cipher}, by defining:
@@ -401,31 +471,107 @@ The following modes create a stream cipher from a block cipher.
 
 
 
+\chapter{Symmetric key cryptography}
 
 
 
 
 
 
-\section{Finite Field Arithmetic}
+
+\chapter{Public Key Cryptography}
 
 
-\section{Diffie-Hellman (DH) protocol}
+
+
+
+
+
+\chapter{Diffie-Hellman (DH) protocol}
 
 Diffie-Hellman (DH) is a mathematical protocol\footnote{A protocol can also be thought as a special case of an algorithm.} that allows two parties to securely establish a shared secret over an insecure public network. Once generated, this shared secret is typically used as an encryption key for faster symmetric algorithms like AES to communicate privately.
 
 DH is still in use today, but certain precautions have to be taken with respect to its building blocks. Authentication also needs to be implemented on top of DH to prevent man-in-the-middle threats.
 
 The mathematical basis for this algorithm is Discrete Logarithm Problem (DLP).
+\usetikzlibrary{arrows.meta, calc, positioning}
+
+\usetikzlibrary{arrows.meta, calc, positioning}
+\usetikzlibrary{arrows.meta, calc, positioning}
+
+\begin{tikzpicture}[
+    node distance = 1cm and 2.5cm,
+    box/.style = {rectangle, draw, rounded corners, minimum width=3cm, minimum height=1.2cm, align=center, fill=blue!5},
+    secret/.style = {rectangle, draw, rounded corners, minimum width=3cm, minimum height=1.2cm, align=center, fill=red!10},
+    shared/.style = {rectangle, draw, rounded corners, minimum width=3cm, minimum height=1.2cm, align=center, fill=green!10, font=\bfseries},
+    line/.style = {draw, -{Stealth[scale=1.2]}, thick}
+]
+
+    % --- Public Parameters ---
+    \node (params) [box] {\textbf{Public Parameters}\\$p$ (prime), $g$ (generator)};
+
+    % --- Alice's Side ---
+    \node (alice_sec) [secret, below left=of params] {Alice's Secret\\Private key: $a$};
+    \node (alice_pub) [box, below=1.5cm of alice_sec] {Alice's Public\\$A = g^a \pmod p$};
+    
+    % --- Bob's Side ---
+    \node (bob_sec) [secret, below right=of params] {Bob's Secret\\Private key: $b$};
+    \node (bob_pub) [box, below=1.5cm of bob_sec] {Bob's Public\\$B = g^b \pmod p$};
+
+    % --- Shared Secret ---
+    \node (alice_key) [shared, below=2cm of alice_pub] {Shared Secret\\$K = B^a \pmod p$};
+    \node (bob_key) [shared, below=2cm of bob_pub] {Shared Secret\\$K = A^b \pmod p$};
+
+    % --- Connections ---
+    % Parameters to Secrets
+    \path [line] (params) -| (alice_sec.north);
+    \path [line] (params) -| (bob_sec.north);
+    
+    % Secret to Public Key Generation
+    \path [line] (alice_sec) -- (alice_pub);
+    \path [line] (bob_sec) -- (bob_pub);
+
+    % Public Key Exchange (Fixed by removing 'midpoint')
+    \path [line] (alice_pub.east) -- node[above, sloped] {Exchange $A$} (bob_key.north);
+    \path [line] (bob_pub.west) -- node[above, sloped] {Exchange $B$} (alice_key.north);
+
+    % Public Key to Shared Secret Calculation
+    \path [line] (alice_sec.west) -- ++(-0.5,0) |- (alice_key.west);
+    \path [line] (bob_sec.east) -- ++(0.5,0) |- (bob_key.east);
+
+    % Equality Link
+    \path [draw, dashed, <->, thick] (alice_key) -- node[above] {$K = g^{ab} \pmod p$} (bob_key);
+
+\end{tikzpicture}
 
 
-\section{Rivest-Shamir-Adleman (RSA) protocol}
+
+% \begin{pchstack}
+%     \procedure{Alice}{
+%         $a \xleftarrow{\$} \mathbb{Z}_q$\\
+%         $A \gets g^a$\\
+%         \sendmessageright*{$A$}
+%         \\
+%         $K \gets B^a$
+%     }
+%     \pchspace
+%     \procedure{Bob}{
+%         $b \xleftarrow{\$} \mathbb{Z}_q$\\
+%         $B \gets g^b$\\
+%         \sendmessageright*{$B$}
+%         \\
+%         $K \gets A^b$
+%     }
+% \end{pchstack}
+
+
+\chapter{Rivest-Shamir-Adleman (RSA) protocol}
 
 Rivest-Shamir-Adleman (RSA) is an asymmetric cryptographic algorithm used by modern computers that relies on factoring integers.
 
 
 
-\section{Models of encryption}
+\chapter{Models of encryption}
 
 \subsection{Symmetric encryption model}
 \begin{figure}[H]
@@ -465,43 +611,12 @@ The use cases for that
 \end{figure}
 
 
-\section{Cryptographic Hash Function}
-
-These are one-way function\footnote{How can we make it rigorous.}. We desire the following properties from these functions, (call an arbitrary one $f$):
-\begin{enumerate}
-    \item It can be applied to a block of data of any size.
-    \item It produces a fixed-length output.
-    \item The value $f(x)$ is relatively easy to compute for any given $x$.
-    \item \emph{One-way}: For any given value $h$, it is computationaly infeasible to find (any one of) its pre-image block $x$, that is such that $f(x) = h$.
-    \item \emph{Weak collision resistant}: For any given block $x$, it is computationally infeasible to find $x' \neq x$ such that $f(x) = f(x')$.
-    \item \emph{Strong collision resistant}: It is computationally infeasible to find any pair $(x, x')$ such that $f(x) = f(x')$.
-\end{enumerate} 
-
-
-Useful applications of hash function:
-\begin{enumerate}
-    \item Human-readable method to compare/verify data.
-    \item Chaining events together - blockchain.
-    \item Digital signatures and message authentication codes.
-    \item Fundamental building block of many secure protocols.
-\end{enumerate}
-
-\begin{example}
-    \emph{SHA-0}: Completely broken, collisions found.
-    \emph{SHA-1}: Implemented using Merkle-Damg\.ard construction. 
-    \emph{SHA-2}: No known flaws.
-    \emph{SHA-3}: Subset of Keccak. Implemented using sponge construction.
-\end{example}
-
-\begin{example}
-    \emph{MD5}: Completely broken, collisions found.
-\end{example}
 
 
 
+\chapter{AES}
 
-
-
+\href{Online AES simulator}{https://aesencryption.net/}
 
 
 
@@ -520,10 +635,10 @@ Useful applications of hash function:
 
 
 
-\bibliography{references}
-\bibliographystyle{amsalpha}
 
+\printbibliography
 \printindex
+
 
 
 

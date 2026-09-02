@@ -1,0 +1,19 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{gf\PYGZus{}mul}\PYG{p}{(}\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{,} \PYG{n}{mod}\PYG{o}{=}\PYG{l+m+mh}{0x11B}\PYG{p}{,} \PYG{n}{degree}\PYG{o}{=}\PYG{l+m+mi}{8}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}Multiply two polynomials over GF(2) modulo the given polynomial.}
+\PYG{l+s+sd}{    Uses Russian peasant multiplication.\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{n}{result} \PYG{o}{=} \PYG{l+m+mi}{0}
+    \PYG{k}{while} \PYG{n}{b}\PYG{p}{:}
+        \PYG{k}{if} \PYG{n}{b} \PYG{o}{\PYGZam{}} \PYG{l+m+mi}{1}\PYG{p}{:}
+            \PYG{n}{result} \PYG{o}{\PYGZca{}=} \PYG{n}{a}
+        \PYG{n}{carry} \PYG{o}{=} \PYG{n}{a} \PYG{o}{\PYGZgt{}\PYGZgt{}} \PYG{p}{(}\PYG{n}{degree} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} highest\PYGZhy{}degree bit}
+        \PYG{n}{a} \PYG{o}{=} \PYG{p}{(}\PYG{n}{a} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{l+m+mi}{1}\PYG{p}{)} \PYG{o}{\PYGZam{}} \PYG{p}{((}\PYG{l+m+mi}{1} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{degree}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{l+m+mi}{1}\PYG{p}{)}
+        \PYG{k}{if} \PYG{n}{carry}\PYG{p}{:}
+            \PYG{n}{a} \PYG{o}{\PYGZca{}=} \PYG{n}{mod}  \PYG{c+c1}{\PYGZsh{} reduce modulo the defining polynomial}
+        \PYG{n}{b} \PYG{o}{\PYGZgt{}\PYGZgt{}=} \PYG{l+m+mi}{1}
+    \PYG{k}{return} \PYG{n}{result}
+
+\PYG{c+c1}{\PYGZsh{} AES field reduction polynomial: x\PYGZca{}8 + x\PYGZca{}4 + x\PYGZca{}3 + x + 1 = 0x11B}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}alpha*alpha in GF(2\PYGZca{}8) = }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{gf\PYGZus{}mul}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{)}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZsh{}04x}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}  \PYG{c+c1}{\PYGZsh{} 0x04}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}2 * 0x57 over GF(2\PYGZca{}8) = }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{gf\PYGZus{}mul}\PYG{p}{(}\PYG{l+m+mi}{2}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mh}{0x57}\PYG{p}{)}\PYG{l+s+si}{:}\PYG{l+s+s2}{\PYGZsh{}04x}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

@@ -1,0 +1,309 @@
+\documentclass[a4paper, 12pt]{book} % changed from scrbook
+% not using \documentclass[a4paper, twoside=semi]{scrreprt} anymore
+
+\usepackage{../Files/Style/InfoSec}
+
+\definecolor{bg}{RGB}{20,20,20}
+\definecolor{fg}{RGB}{220,220,220}
+\definecolor{keyword}{RGB}{130,170,255}
+\definecolor{comment}{RGB}{120,120,120}
+\definecolor{string}{RGB}{255,200,120}
+
+\lstdefinestyle{darkbash}{
+    backgroundcolor=\color{bg},
+    basicstyle=\scriptsize\ttfamily\color{fg},
+    keywordstyle=\color{keyword},
+    commentstyle=\color{comment},
+    autogobble=true,
+    stringstyle=\color{string},
+    breaklines=true,
+    showstringspaces=false,
+    frame=single
+}
+
+% \usepackage{titlesec}
+% \setkomafont{chapter}{\Huge\bfseries}
+% \setkomafont{section}{\Large\bfseries}
+% \setkomafont{subsection}{\large\bfseries}
+\usepackage{fancyhdr, lastpage}
+\usepackage{lstautogobble}
+\usepackage{euscript}
+
+
+\makeatletter
+\providecommand{\subtitle}[1]{\gdef\@subtitle{#1}}
+\providecommand{\@subtitle}{}
+\makeatother
+
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+
+
+
+
+\usepackage{newfloat}
+%\usepackage{tocloft}
+
+% % Define new float environment
+% \DeclareFloatingEnvironment[
+%   fileext=lof,
+%   listname={List of Flowcharts},
+%   name=Flowchart,
+% ]{flowchart}
+
+
+\pagestyle{fancy}
+%\fancyhf{}
+\lhead{}
+\chead{}
+%\rhead{Introduction to the Theory of Computation}
+\cfoot{\thepage\ of \pageref{LastPage}}
+\rfoot{Version 8.3}
+
+
+
+
+\RequirePackage{etex} 
+
+
+%--- The documentation for the title can be found at: https://en.wikibooks.org/wiki/LaTeX/Title_Creation
+\title{Information Security \\ Network Layers}
+\author{Ahmed U. Ashraf}
+\date{\today }
+% \subtitle{Version~\version}
+
+\begin{document}
+
+% \include{glossary}
+
+
+\maketitle
+%--- we would like to hyperlink each item in contensts page
+% \let\hypercontentsline=\contentsline
+% \renewcommand{\contentsline}[4]{\hypertarget{toc.#4}{}\hypercontentsline{#1}{#2}{#3}{#4}}
+%--- We print ToC: Table of Contents
+
+\DeclareFontShape{U}{stmry}{b}{n}{<-> ssub * stmry/m/n}{}
+
+\tableofcontents\label{toc}
+%--- We print the list of figures, this might go at the end.
+
+
+
+
+% \listoffigures
+% %--- We print the list of tables, this might also go at the end.
+% \listoftables
+% %--- This is to add list of symbols as glossary
+% % \printunsrtglossary[type=symbols,style=long,title={List of Symbols}]
+
+
+% % List of Algorithms (- taken the idea from Discrete Algorithmic Mathematics by Stephen B.Maurer and ANthony Ralston.pdf)
+
+% \listofalgorithms
+% \addcontentsline{toc}{chapter}{List of Algorithms}
+
+% \listofflowcharts
+% %\addcontentsline{toc}{chapter}{List of Flowcharts}
+
+
+
+
+\chapter{Network Layers}
+Here are the two models: OSI ISO model is abstraction-based, while TCP/IP model is implementation based.
+\begin{longtable}{|c|c|c|} \hline 
+    
+    No. & Name & Job \\ \hline 
+   7 & Application & Provide network process to application \\ \hline 
+   6 & Presentation & Format conversion, encryption/decryption \\ \hline 
+   5 & Session & Interhost communication, logon/off \\ \hline 
+   4 &  Transport & Reliability, error check, flow control \\ \hline 
+   3 &  Network & Logical addressing, routing \\ \hline 
+   2 & Data Link & Physical addressing, link error check \\ \hline 
+   1 &  Physical & Electrical signaling, cabling \\ \hline   
+   \caption{\emph{Open Systems Interconnection} (OSI)  \emph{International Organization for Standardization} (ISO) model}      
+\end{longtable}
+
+\begin{longtable}{|c|c|c|} \hline 
+    No. & Layer & Protocols \\ \hline 
+    7 & Application & FTP, HTTP, SMTP, DNS \\ \hline 
+    4 & Transport & TCP, UDP \\ \hline 
+    3 & Internet & IP \\ \hline 
+    1 & Network Access & Ethernet, MAC \\ \hline 
+    \caption{TCP/IP model}
+\end{longtable}
+
+Message moves down through layers on sending device. When data reaches physical layer, it is changed into electromagnetic signal and sent along a physical link. Message then moves up through layers at the receiving device. Note that at intermediate nodes (routers), data is pulled only up to network layer, so that next hop could be determined.
+
+Each layer encapsulates data sent by the layers above it and provides specific features to higherlayer protocols.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[scale=0.3]{hourglass.png}
+%     \caption{Internet Hourglass architecture}
+% \end{figure}
+
+
+
+
+
+
+\section{IP}
+
+We can check our configurations using the command for \emph{interface configuration}
+\begin{lstlisting}[style=darkbash, language=bash]
+ifconfig
+\end{lstlisting}
+This shows local IP. To check public IP, we use \textcolor{blue}{curl}
+\begin{lstlisting}[style=darkbash, language=bash]
+curl ifconfig.me
+\end{lstlisting}
+To find IP of others, we can use \textcolor{blue}{dig} or \textcolor{blue}{nslookup}
+\begin{lstlisting}[style=darkbash, language=bash]
+dig google.com
+nslookup google.com
+\end{lstlisting}
+Given an public IP address, we can also ask who is at that address by using \textcolor{blue}{whois}
+\begin{lstlisting}[style=darkbash, language=bash]
+whois 192.178.192.138
+\end{lstlisting}
+
+
+
+
+
+
+\section{Encodings}
+
+\verb|openssl enc -list|
+
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{llll}
+\hline
+aes-128-cbc & aes-128-cfb & aes-128-cfb1 & aes-128-cfb8 \\
+aes-128-ctr & aes-128-ecb & aes-128-ofb & aes-192-cbc \\
+aes-192-cfb & aes-192-cfb1 & aes-192-cfb8 & aes-192-ctr \\
+aes-192-ecb & aes-192-ofb & aes-256-cbc & aes-256-cfb \\
+aes-256-cfb1 & aes-256-cfb8 & aes-256-ctr & aes-256-ecb \\
+aes-256-ofb & aes128 & aes128-wrap & aes128-wrap-pad \\
+aes192 & aes192-wrap & aes192-wrap-pad & aes256 \\
+aes256-wrap & aes256-wrap-pad & aria-128-cbc & aria-128-cfb \\
+aria-128-cfb1 & aria-128-cfb8 & aria-128-ctr & aria-128-ecb \\
+aria-128-ofb & aria-192-cbc & aria-192-cfb & aria-192-cfb1 \\
+aria-192-cfb8 & aria-192-ctr & aria-192-ecb & aria-192-ofb \\
+aria-256-cbc & aria-256-cfb & aria-256-cfb1 & aria-256-cfb8 \\
+aria-256-ctr & aria-256-ecb & aria-256-ofb & aria128 \\
+aria192 & aria256 & bf & bf-cbc \\
+bf-cfb & bf-ecb & bf-ofb & blowfish \\
+camellia-128-cbc & camellia-128-cfb & camellia-128-cfb1 & camellia-128-cfb8 \\
+camellia-128-ctr & camellia-128-ecb & camellia-128-ofb & camellia-192-cbc \\
+camellia-192-cfb & camellia-192-cfb1 & camellia-192-cfb8 & camellia-192-ctr \\
+camellia-192-ecb & camellia-192-ofb & camellia-256-cbc & camellia-256-cfb \\
+camellia-256-cfb1 & camellia-256-cfb8 & camellia-256-ctr & camellia-256-ecb \\
+camellia-256-ofb & camellia128 & camellia192 & camellia256 \\
+cast & cast-cbc & cast5-cbc & cast5-cfb \\
+cast5-ecb & cast5-ofb & chacha20 & des \\
+des-cbc & des-cfb & des-cfb1 & des-cfb8 \\
+des-ecb & des-ede & des-ede-cbc & des-ede-cfb \\
+des-ede-ecb & des-ede-ofb & des-ede3 & des-ede3-cbc \\
+des-ede3-cfb & des-ede3-cfb1 & des-ede3-cfb8 & des-ede3-ecb \\
+des-ede3-ofb & des-ofb & des3 & des3-wrap \\
+desx & desx-cbc & id-aes128-wrap & id-aes128-wrap-pad \\
+id-aes192-wrap & id-aes192-wrap-pad & id-aes256-wrap & id-aes256-wrap-pad \\
+id-smime-alg-CMS3DESwrap & idea & idea-cbc & idea-cfb \\
+idea-ecb & idea-ofb & rc2 & rc2-128 \\
+rc2-40 & rc2-40-cbc & rc2-64 & rc2-64-cbc \\
+rc2-cbc & rc2-cfb & rc2-ecb & rc2-ofb \\
+rc4 & rc4-40 & seed & seed-cbc \\
+seed-cfb & seed-ecb & seed-ofb & sm4 \\
+sm4-cbc & sm4-cfb & sm4-ctr & sm4-ecb \\
+sm4-ofb & & & \\
+\hline
+\end{tabular}
+\caption{OpenSSL-supported cipher algorithms}
+\end{table}
+
+
+
+\section{Key Exchange}
+
+Let us do an ephemeral ECDH exchange using OpenSSL.
+\begin{enumerate}
+\item Generate Alice's EC private key
+    \begin{lstlisting}[style=darkbash, language=bash]
+    openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out alice.pem
+    \end{lstlisting} 
+\item Generate Bob's EC private key
+    \begin{lstlisting}[style=darkbash, language=bash]
+    openssl genpkey -algorithm EC -pkeyopt ec_paramgen_curve:P-256 -out bob.pem
+    \end{lstlisting} 
+\item Extract public keys
+    \begin{lstlisting}[style=darkbash, language=bash]
+    openssl pkey -in alice.pem -pubout -out alice_pub.pem
+    openssl pkey -in bob.pem -pubout -out bob_pub.pem
+    \end{lstlisting}
+\item Alice derives shared secret using Bob's public key
+    \begin{lstlisting}[style=darkbash, language=bash]
+    openssl pkeyutl -derive \
+  -inkey alice.pem \
+  -peerkey bob_pub.pem \
+  -out alice_secret.bin
+    \end{lstlisting}
+\item Bob derives shared secret using Alice's public key
+    \begin{lstlisting}[style=darkbash, language=bash]
+    openssl pkeyutl -derive \
+  -inkey bob.pem \
+  -peerkey alice_pub.pem \
+  -out bob_secret.bin
+    \end{lstlisting}
+\item Verify that both sides derived the same secret:
+    \begin{lstlisting}[style=darkbash, language=bash]
+    sha256sum alice_secret.bin bob_secret.bin
+    \end{lstlisting} 
+\end{enumerate}
+
+What is happening in principle is
+\begin{enumerate}
+    \item Alice creates \verb|(alice_private, alice_public)|.
+    \item Bob creates (\verb|bob_private, bob_public|).
+    \item Alice computes \verb|ECDH(alice_private, bob_public)|.
+    \item Bob computes \verb|ECDH(bob_private, alice_public)|.
+    \item Both obtain the same shared secret, which can then be fed into a \verb|KDF| to produce encryption keys.
+\end{enumerate}
+
+A Key Derivation Function (KDF) is a cryptographic algorithm that turns some input secret material into one or more cryptographic keys.
+
+    
+
+
+
+
+
+
+
+
+
+
+
+% \chapter{References}
+
+%-- Computation Engineering by Ganesh Gopalakrishnan
+
+\cite{adamson2012set}
+
+% \nocite{*}
+
+
+
+\printbibliography
+\printindex
+
+
+
+
+\end{document}
