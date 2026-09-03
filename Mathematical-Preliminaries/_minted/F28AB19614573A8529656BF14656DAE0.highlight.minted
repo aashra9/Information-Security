@@ -1,0 +1,27 @@
+\begin{MintedVerbatim}[commandchars=\\\{\}]
+\PYG{k}{def}\PYG{+w}{ }\PYG{n+nf}{point\PYGZus{}add}\PYG{p}{(}\PYG{n}{P}\PYG{p}{,} \PYG{n}{Q}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{p}\PYG{p}{):}
+\PYG{+w}{    }\PYG{l+s+sd}{\PYGZdq{}\PYGZdq{}\PYGZdq{}Add two points on E: y\PYGZca{}2 = x\PYGZca{}3 + ax + b (mod p).\PYGZdq{}\PYGZdq{}\PYGZdq{}}
+    \PYG{k}{if} \PYG{n}{P} \PYG{o+ow}{is} \PYG{k+kc}{None}\PYG{p}{:}  \PYG{c+c1}{\PYGZsh{} point at infinity (identity)}
+        \PYG{k}{return} \PYG{n}{Q}
+    \PYG{k}{if} \PYG{n}{Q} \PYG{o+ow}{is} \PYG{k+kc}{None}\PYG{p}{:}
+        \PYG{k}{return} \PYG{n}{P}
+    \PYG{n}{x1}\PYG{p}{,} \PYG{n}{y1} \PYG{o}{=} \PYG{n}{P}
+    \PYG{n}{x2}\PYG{p}{,} \PYG{n}{y2} \PYG{o}{=} \PYG{n}{Q}
+    \PYG{k}{if} \PYG{n}{x1} \PYG{o}{==} \PYG{n}{x2} \PYG{o+ow}{and} \PYG{p}{(}\PYG{n}{y1} \PYG{o}{+} \PYG{n}{y2}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{n}{p} \PYG{o}{==} \PYG{l+m+mi}{0}\PYG{p}{:}
+        \PYG{k}{return} \PYG{k+kc}{None}  \PYG{c+c1}{\PYGZsh{} P + (\PYGZhy{}P) = O}
+    \PYG{k}{if} \PYG{n}{P} \PYG{o}{==} \PYG{n}{Q}\PYG{p}{:}
+        \PYG{c+c1}{\PYGZsh{} slope for doubling}
+        \PYG{n}{lam} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mi}{3} \PYG{o}{*} \PYG{n}{x1} \PYG{o}{*} \PYG{n}{x1} \PYG{o}{+} \PYG{n}{a}\PYG{p}{)} \PYG{o}{*} \PYG{n+nb}{pow}\PYG{p}{(}\PYG{l+m+mi}{2} \PYG{o}{*} \PYG{n}{y1}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{p}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{n}{p}
+    \PYG{k}{else}\PYG{p}{:}
+        \PYG{n}{lam} \PYG{o}{=} \PYG{p}{(}\PYG{n}{y2} \PYG{o}{\PYGZhy{}} \PYG{n}{y1}\PYG{p}{)} \PYG{o}{*} \PYG{n+nb}{pow}\PYG{p}{(}\PYG{n}{x2} \PYG{o}{\PYGZhy{}} \PYG{n}{x1}\PYG{p}{,} \PYG{o}{\PYGZhy{}}\PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n}{p}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{n}{p}
+    \PYG{n}{x3} \PYG{o}{=} \PYG{p}{(}\PYG{n}{lam} \PYG{o}{*} \PYG{n}{lam} \PYG{o}{\PYGZhy{}} \PYG{n}{x1} \PYG{o}{\PYGZhy{}} \PYG{n}{x2}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{n}{p}
+    \PYG{n}{y3} \PYG{o}{=} \PYG{p}{(}\PYG{n}{lam} \PYG{o}{*} \PYG{p}{(}\PYG{n}{x1} \PYG{o}{\PYGZhy{}} \PYG{n}{x3}\PYG{p}{)} \PYG{o}{\PYGZhy{}} \PYG{n}{y1}\PYG{p}{)} \PYG{o}{\PYGZpc{}} \PYG{n}{p}
+    \PYG{k}{return} \PYG{p}{(}\PYG{n}{x3}\PYG{p}{,} \PYG{n}{y3}\PYG{p}{)}
+
+\PYG{c+c1}{\PYGZsh{} Curve y\PYGZca{}2 = x\PYGZca{}3 + 2x + 2 over GF(17)}
+\PYG{n}{a}\PYG{p}{,} \PYG{n}{b}\PYG{p}{,} \PYG{n}{p} \PYG{o}{=} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{l+m+mi}{17}
+\PYG{n}{P} \PYG{o}{=} \PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{,} \PYG{l+m+mi}{1}\PYG{p}{)}
+\PYG{n}{Q} \PYG{o}{=} \PYG{n}{point\PYGZus{}add}\PYG{p}{(}\PYG{n}{P}\PYG{p}{,} \PYG{n}{P}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{p}\PYG{p}{)}      \PYG{c+c1}{\PYGZsh{} 2P}
+\PYG{n}{R} \PYG{o}{=} \PYG{n}{point\PYGZus{}add}\PYG{p}{(}\PYG{n}{Q}\PYG{p}{,} \PYG{n}{P}\PYG{p}{,} \PYG{n}{a}\PYG{p}{,} \PYG{n}{p}\PYG{p}{)}      \PYG{c+c1}{\PYGZsh{} 3P}
+\PYG{n+nb}{print}\PYG{p}{(}\PYG{l+s+sa}{f}\PYG{l+s+s2}{\PYGZdq{}2P = }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{Q}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{, 3P = }\PYG{l+s+si}{\PYGZob{}}\PYG{n}{R}\PYG{l+s+si}{\PYGZcb{}}\PYG{l+s+s2}{\PYGZdq{}}\PYG{p}{)}
+\end{MintedVerbatim}

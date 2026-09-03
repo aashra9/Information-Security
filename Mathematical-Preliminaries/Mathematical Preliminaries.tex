@@ -97,6 +97,11 @@
 \date{\today }
 % \subtitle{Version~\version}
 
+% Convenience macro to reference an accompanying Jupyter notebook in Python-Files/Notebooks/.
+\newcommand{\notebook}[1]{\begingroup\small\itshape
+    See the accompanying notebook~\href{run:./Python-Files/Notebooks/#1}{#1} in \texttt{Python-Files/Notebooks/} for executable examples.%
+\endgroup}
+
 \begin{document}
 
 % \include{glossary}
@@ -211,6 +216,22 @@ The number 1 is (by definition) not considered prime. The number 2 is the only e
     where $p_1, p_2, \ldots, p_\ell$ are distinct primes and $k_1, k_2, \ldots, k_\ell$ are positive integers. This factorisation is unique apart from the order of the prime factors.
 \end{theorem}
 
+\begin{example}
+    The number $360$ factors as
+    \begin{align}
+        360 = 2^3 \cdot 3^2 \cdot 5
+    \end{align}
+    and no other rearrangement of prime powers yields $360$: indeed any such factorisation must contain one factor of $5$, one factor of $3^2$ (since $3^2 = 9 \nmid 360/n$ if the exponent differed), and three factors of $2$. Because the order of the factors does not matter, this is the \emph{unique} prime factorisation. The same idea lets us count the divisors: each divisor is built by independently choosing the exponent of $2$ to be any of $\{0,1,2,3\}$, the exponent of $3$ to be any of $\{0,1,2\}$, and the exponent of $5$ to be $0$ or $1$, giving
+    \begin{align}
+        d(360) = (3+1)(2+1)(1+1) = 24
+    \end{align}
+    positive divisors in total.
+\end{example}
+
+\begin{example}
+    (Euclid's lemma and primality) Since $p = 7$ is prime and $7 \mid 28 = 4 \cdot 7$, Euclid's lemma applies trivially, but a less obvious instance is: $7 \mid 147 = 21 \cdot 7$ forces $7$ to divide one of $21$ and $7$. More interestingly, $7 \nmid 13$ and $7 \nmid 23$, yet $7 \mid 300$; the product $13 \cdot 23 = 299$ is \emph{not} divisible by $7$, consistent with the contrapositive: if a prime divides neither factor, it cannot divide their product.
+\end{example}
+
 \begin{theorem}
     There are infinitely many primes.
 \end{theorem}
@@ -293,6 +314,7 @@ print(sieve_of_eratosthenes(30))
 # Output: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29]
 \end{minted}
 
+\notebook{01-integers.ipynb}
 
 \section{Prime Numbers}
 The problem to decide whether a given number is a prime has been studied comprehensively. 
@@ -356,6 +378,26 @@ prime $p$ such that $n < p < 2n - 2$.
     \end{align}
 \end{proposition}
 
+\begin{example}
+    Take $a = 84 = 2^2 \cdot 3 \cdot 7$ and $b = 30 = 2 \cdot 3 \cdot 5$. Writing both with a common set of primes $\{2,3,5,7\}$:
+    \begin{align}
+        84 &= 2^2 \cdot 3^1 \cdot 5^0 \cdot 7^1 \\
+        30 &= 2^1 \cdot 3^1 \cdot 5^1 \cdot 7^0
+    \end{align}
+    Taking component-wise minima gives $\gcd(84,30) = 2^1 \cdot 3^1 = 6$, and component-wise maxima gives $\lcm(84,30) = 2^2 \cdot 3 \cdot 5 \cdot 7 = 420$. As guaranteed,
+    \begin{align}
+        6 \cdot 420 = 2520 = 84 \cdot 30.
+    \end{align}
+    By Bezout's identity, $\gcd(84,30) = 6$ must be expressible as an integer combination of $84$ and $30$; indeed $6 = 30\cdot 3 - 84 \cdot 1$.
+\end{example}
+
+\begin{example}
+    (Modular arithmetic and units) In $\mathbb{Z}/12\mathbb{Z}$ the units are the elements relatively prime to $12$, namely
+    \begin{align}
+        (\mathbb{Z}/12\mathbb{Z})^\times = \{1, 5, 7, 11\}
+    \end{align}
+    because $\gcd(5,12)=\gcd(7,12)=\gcd(11,12)=1$ while $2,3,4,6,8,9,10$ share a common factor with $12$ and hence are zero divisors, not units. Their group has order $\phi(12) = 4$, and the inverse of $5$ is $5$ itself since $5\cdot 5 = 25 \equiv 1 \pmod{12}$; the inverse of $7$ is $7$, and the inverse of $11$ is $11$. Notice a unit can be its own inverse, unlike in a field where $\pm 1$ are the only involutions---this reflects the fact that $\mathbb{Z}/12\mathbb{Z}$ is \emph{not} a field.
+\end{example}
 
 \section{Modular arithmetic}
 
@@ -391,6 +433,27 @@ A principal ideal $a\mathbb{Z}$ of $\mathbb{Z}$ will also sometimes be denoted b
     \end{align}
     that is, $N$ has remainder $r$ on dividing by $a$ and remainder $s$ on dividing by $b$.
 \end{theorem}
+
+\begin{example}
+    Solve the simultaneous congruences
+    \begin{align}
+        N &\equiv 2 \pmod 3 \\
+        N &\equiv 3 \pmod 5.
+    \end{align}
+    Since $\gcd(3,5) = 1$ the CRT guarantees a unique solution $0 \le N < 15$. We search by listing numbers congruent to $2 \pmod 3$:
+    \begin{align}
+        N \in \{2, 5, 8, 11, 14, \ldots\}
+    \end{align}
+    and pick the first that is also $\equiv 3 \pmod 5$: indeed $8 \equiv 3 \pmod 5$, so $N = 8$. Adding $15$ repeatedly gives further solutions $23, 38, \ldots$, all congruent to $8$ modulo $15$.
+\end{example}
+
+\begin{example}
+    (CRT in RSA decryption) When the RSA modulus is $n = pq$ with distinct primes $p, q$, the CRT lets us reduce a full-size computation $M \equiv C^d \pmod n$ to two much smaller ones:
+    \begin{align}
+        M_p \equiv C^d \pmod p, \qquad M_q \equiv C^d \pmod q.
+    \end{align}
+    With $p = 61, q = 53$, so $n = 3233$, knowing $M \bmod 61$ and $M \bmod 53$ determines $M \bmod 3233$ uniquely by the CRT. This reduces the work by about a factor of $4$ relative to a single large exponentiation, which is why CRT-based RSA decryption is standard in practice.
+\end{example}
 
 
 \section{Fermat's Little Theorem}
@@ -466,6 +529,26 @@ years later by Alford, Granville, and Pomerance.
     \end{align}
 \end{proposition}
 
+\begin{example}
+    Compute $\phi(72)$. Factoring, $72 = 2^3 \cdot 3^2$. Using the product formula,
+    \begin{align}
+        \phi(72) = 72\bigg(1 - \frac12\bigg)\bigg(1 - \frac13\bigg)
+                  = 72 \cdot \frac12 \cdot \frac23 = 24.
+    \end{align}
+    Alternatively, using multiplicativity and $\phi(p^k) = p^k - p^{k-1}$, 
+    \begin{align}
+        \phi(72) = \phi(8)\phi(9) = (8 - 4)(9 - 3) = 4 \cdot 6 = 24.
+    \end{align}
+    Both approaches agree, as required. This is the order of the unit group $(\mathbb{Z}/72\mathbb{Z})^\times$, which is the group in which RSA exponents with modulus $72$ would live.
+\end{example}
+
+\begin{example}
+    (Euler's theorem) Since $\gcd(5, 21) = 1$ and $\phi(21) = \phi(3)\phi(7) = 2 \cdot 6 = 12$, Euler's theorem gives
+    \begin{align}
+        5^{12} \equiv 1 \pmod{21}.
+    \end{align}
+    Indeed $5^{12} = 244140625$, and dividing by $21$ leaves remainder $1$. This is the generalisation of Fermat's little theorem that holds when the modulus is composite yet still coprime to the base.
+\end{example}
 
 \section{Euler's congruence theorem}
 
@@ -489,11 +572,24 @@ and
 \begin{align}
     x^2 \equiv a \pmod{p}
 \end{align}
-has a solution $x \in \mathbb{Z}_p$. The number $a$ is defined to be a \emph{quadratic non-residue modulo $p$} iff
+    has a solution $x \in \mathbb{Z}_p$. The number $a$ is defined to be a \emph{quadratic non-residue modulo $p$} iff
 \begin{align}
     a \not\equiv 0 \pmod{p}
 \end{align}
 and $a$ is not a quadratic residue modulo $p$.
+
+\begin{example}
+    Take $p = 7$. The nonzero squares are
+    \begin{align}
+        1^2 &\equiv 1, & 2^2 &\equiv 4, & 3^2 &\equiv 2, \\
+        4^2 &\equiv 2, & 5^2 &\equiv 4, & 6^2 &\equiv 1.
+    \end{align}
+    Hence the quadratic residues modulo $7$ are $\{1, 2, 4\}$ and the non-residues are $\{3, 5, 6\}$. For example, $x^2 \equiv 5 \pmod 7$ has \emph{no} solution. The Legendre symbol is then
+    \begin{align}
+        (1|7) = (2|7) = (4|7) = 1, \qquad (3|7) = (5|7) = (6|7) = -1.
+    \end{align}
+    Applying Euler's criterion $(a|7) \equiv a^{(7-1)/2} = a^3 \pmod 7$ reproduces these values, e.g.\ $3^3 = 27 \equiv 6 \equiv -1 \pmod 7$.
+\end{example}
 
 \section{Primality testing}
 % ref: Cryptography by Simon Rubinstein-Salzedo.pdf
@@ -603,6 +699,21 @@ be correct. However, there are bases $a$ such that a composite number $n$ is inc
     (Monier-Rabin). Let $N$ be an odd composite integer. The probability that a random integer $a \in [1, N -1]$ is a witness for $N$ is at least $\dfrac{3}{4}$.
 \end{theorem}
 
+\begin{example}
+    Consider $N = 561$, a notorious Carmichael number, so that the simple Fermat test fails for every base coprime to $N$. Running Miller-Rabin with base $a = 2$:
+    \begin{align}
+        N - 1 = 560 = 2^4 \cdot 35,
+    \end{align}
+    so $\ell = 4$, $m = 35$. We compute
+    \begin{align}
+        2^{35} \bmod 561 &= 263, \\
+        2^{70}  \bmod 561 &= 166, \\
+        2^{140} \bmod 561 &= 67, \\
+        2^{280} \bmod 561 &= 1.
+    \end{align}
+    Since $y$ reaches $1$ without ever passing through $-1 \equiv 560 \pmod{561}$, the algorithm declares $561$ composite. By the Monier-Rabin theorem, a fixed composite $N$ is caught with probability at least $3/4$ per random base, so repeating with $k$ bases drives the error probability below $4^{-k}$---for $k = 20$, less than $10^{-12}$.
+\end{example}
+
 \chapter{Polynomials}
 
 Polynomials over finite fields play a central role in modern cryptography.
@@ -671,8 +782,28 @@ needed in the remainder of this document.
     \begin{align}
         f(x) = \bigg( q_1(x) + \frac{a_n}{b_m} x^{n-m} \bigg) g(x) + r(x)
     \end{align}
-    which gives the desired decomposition with $q = q_1 + \frac{a_n}{b_m} x^{n-m}$. Uniqueness follows from the observation that if $fg + r = q'g + r'$ with both remainders of degree less than $\deg(g)$, then $(q - q')g = r' - r$, and degree considerations force $q = q'$ and $r = r'$.
+    which gives the desired decomposition with $q = q_1 + \frac{a_n}{b_m} x^{n-m}$.     Uniqueness follows from the observation that if $fg + r = q'g + r'$ with both remainders of degree less than $\deg(g)$, then $(q - q')g = r' - r$, and degree considerations force $q = q'$ and $r = r'$.
 \end{proof}
+
+\begin{example}
+    Divide $f(x) = x^3 + 2x^2 + 1$ by $g(x) = x^2 + x + 1$ over $\mathbb{Z}_2$. Following the long-division algorithm, the leading term of $x^3$ divided by $x^2$ gives quotient term $x$; subtracting $x \cdot g(x) = x^3 + x^2 + x$ from $f$ leaves
+    \begin{align}
+        (x^3 + 2x^2 + 1) - (x^3 + x^2 + x) = x^2 + x + 1 = g(x)
+    \end{align}
+    since $2 \equiv 0 \pmod 2$. Letting the quotient accumulate another $1$, subtracting $g$ leaves remainder $0$. Hence
+    \begin{align}
+        x^3 + 2x^2 + 1 = (x + 1)(x^2 + x + 1) \qquad \text{over } \mathbb{Z}_2.
+    \end{align}
+    In particular $r = 0$, so $g$ divides $f$.
+\end{example}
+
+\begin{example}
+    Over $\mathbb{Q}$, divide $f(x) = x^3 - x^2 - x - 1$ by $g(x) = x - 2$. The quotient is $q(x) = x^2 + x + 1$ with remainder $r(x) = 1$:
+    \begin{align}
+        x^3 - x^2 - x - 1 = (x - 2)(x^2 + x + 1) + 1.
+    \end{align}
+    The Remainder Theorem predicts that the remainder is exactly $f(2) = 8 - 4 - 2 - 1 = 1$, matching $r$. Since $f(2) \neq 0$, $x - 2$ is not a factor of $f$.
+\end{example}
 
 \begin{proposition}
     (\emph{Remainder theorem}) If $f(x) \in \Bbbk[x]$ and $\alpha \in \Bbbk$, then the remainder upon dividing $f(x)$ by $(x - \alpha)$ is exactly $f(\alpha)$. Consequently, $(x - \alpha)$ divides $f(x)$ if and only if $f(\alpha) = 0$.
@@ -710,6 +841,26 @@ needed in the remainder of this document.
     \end{align}
     which is the polynomial analogue of B\'ezout's identity.
 \end{theorem}
+
+\begin{example}
+    Compute $\gcd(f, g)$ over $\mathbb{Q}$ for $f(x) = x^4 + x^3 + x^2 + x$ and $g(x) = x^2 + x$. The Euclidean algorithm gives
+    \begin{align}
+        x^4 + x^3 + x^2 + x &= (x^2 + 1)\big(x^2 + x\big) + 0,
+    \end{align}
+    so the remainder is already $0$ and $g$ itself divides $f$. Normalizing to be monic, $\gcd(f, g) = x^2 + x$. In particular $x(x+1)$ is a common factor, and indeed $f(x) = x(x+1)(x^2+1)$ factors completely.
+\end{example}
+
+\begin{example}
+    Over $\mathbb{Q}$, find $\gcd(f, g)$ for $f(x) = x^3 - 1$ and $g(x) = x^2 - 1$. First division:
+    \begin{align}
+        x^3 - 1 = x(x^2 - 1) + (x - 1),
+    \end{align}
+    then
+    \begin{align}
+        x^2 - 1 = (x + 1)(x - 1) + 0.
+    \end{align}
+    The last non-zero remainder is $x - 1$, which is already monic, so $\gcd(x^3 - 1, x^2 - 1) = x - 1$. This reflects that $1$ is the unique common root of the two polynomials.
+\end{example}
 
 \section{Lagrange's Interpolation}
 
@@ -792,9 +943,10 @@ def lagrange_interpolate(points, x, p):
 # Reconstruct secret from shares (Shamir's scheme, t=3)
 shares = [(1, 5), (2, 3), (3, 4)]  # (x_i, y_i), p=17
 secret = lagrange_interpolate(shares, 0, 17)
-print(f"Reconstructed secret: {secret}")
+ print(f"Reconstructed secret: {secret}")
 \end{minted}
 
+\notebook{02-polynomials.ipynb}
 
 \chapter{Groups}
 \label{ch:groups}
@@ -904,8 +1056,16 @@ that arise in cryptographic applications.
     \begin{align}
         (ab)^{mn} = (a^m)^n (b^n)^m = e \cdot e = e
     \end{align}
-    so $o(ab) \leq mn$. Conversely, if $(ab)^\ell = e$, then $a^\ell = b^{-\ell}$. Raising to the power $n$ gives $a^{\ell n} = e$, so $m$ divides $\ell n$. Since $\gcd(m, n) = 1$, we have $m \mid \ell$. Similarly, $n \mid \ell$, and since $m, n$ are coprime, $mn \mid \ell$. Hence $o(ab) = mn$. See also page 198 of \cite{zheng2022modern}.
+    so $o(ab) \leq mn$. Conversely, if $(ab)^\ell = e$, then $a^\ell = b^{-\ell}$. Raising to the power $n$ gives $a^{\ell n} = e$, so $m$ divides $\ell n$. Since $\gcd(m, n) = 1$, we have $m \mid \ell$. Similarly, $n \mid \ell$, and since $m, n$ are coprime, $mn \mid \ell$.     Hence $o(ab) = mn$. See also page 198 of \cite{zheng2022modern}.
 \end{proof}
+
+\begin{example}
+    In the cyclic group $\mathbb{Z}_{11}^\times$, take the generator $g = 2$. Then $o(2) = 10$, and the order of the element $2^k$ is given by
+    \begin{align}
+        o(2^k) = \frac{10}{\gcd(k, 10)}.
+    \end{align}
+    For instance, $o(2^2) = 10/\gcd(2,10) = 10/2 = 5$, and indeed $(2^2)^5 = 2^{10} \equiv 1 \pmod{11}$ while no smaller power is $1$. Similarly $o(2^4) = 10/\gcd(4,10) = 5$, and $o(2^5) = 10/\gcd(5,10) = 2$, i.e.\ $2^5 = 32 \equiv -1 \pmod{11}$ with $(-1)^2 = 1$. The generators of $\mathbb{Z}_{11}^\times$ are $2^k$ with $\gcd(k,10) = 1$, namely $k \in \{1,3,7,9\}$; there are $\varphi(10) = 4$ of them.
+\end{example}
 
 \begin{definition}
     Let $n$ be a positive integer. An element $g \in \mathbb{Z}_n^\times$ is called a \emph{primitive root}\index{primitive root} modulo $n$ if $g$ generates $\mathbb{Z}_n^\times$, that is, if $o(g) = \varphi(n)$.
@@ -917,6 +1077,14 @@ that arise in cryptographic applications.
 \begin{proof}
     See page 199 of \cite{zheng2022modern}. The non-existence for other moduli follows from the structure theorem for finite Abelian groups: $\mathbb{Z}_n^\times$ is cyclic precisely in the four cases listed.
 \end{proof}
+
+\begin{example}
+    (\emph{Primitive roots}) The integer $3$ is a primitive root modulo $7$, since $o(3) = \varphi(7) = 6$, and $7 = p^1$ is of the form $p^k$ with odd prime $p$. Over $\mathbb{Z}_9$, the element $2$ is a primitive root:
+    \begin{align}
+        2^1 \equiv 2,\; 2^2 \equiv 4,\; 2^3 \equiv 8,\; 2^4 \equiv 7,\; 2^5 \equiv 5,\; 2^6 \equiv 1 \pmod 9
+    \end{align}
+    so $o(2) = 6 = \varphi(9)$, and $2$ generates $\mathbb{Z}_9^\times$. By contrast, $\mathbb{Z}_8^\times = \{1,3,5,7\}$ is the Klein four-group: $3^2 \equiv 5^2 \equiv 7^2 \equiv 1 \pmod 8$, so no element has order $4 = \varphi(8)$, hence $\mathbb{Z}_8^\times$ is \emph{not} cyclic and has no primitive root---consistent with the existence theorem, since $8 = 2^3$ is not one of the four allowed forms.
+\end{example}
 
 \section{Permutation groups}
 
@@ -948,6 +1116,14 @@ that arise in cryptographic applications.
     For each $g \in G$, define the left translation map $L_g: G \longrightarrow G$ by $L_g(h) = gh$. Each $L_g$ is a bijection, hence a permutation of the set $G$. The map $g \mapsto L_g$ is an injective group homomorphism from $G$ into $\mathrm{Sym}(G) \cong S_{|G|}$, so $G$ embeds as a subgroup.
 \end{proof}
 
+\begin{example}
+    (\emph{Parity of permutations}) A $k$-cycle is a product of $k-1$ transpositions, so its sign is $(-1)^{k-1}$. Consider the permutation in cycle notation
+    \begin{align}
+        \sigma = (1~3~5)(2~4).
+    \end{align}
+    The $3$-cycle has sign $(-1)^{2} = 1$ and the $2$-cycle has sign $(-1)^1 = -1$, so the sign of $\sigma$ is $1 \cdot (-1) = -1$; $\sigma$ is an \emph{odd} permutation. The order of $\sigma$ is the least common multiple of the cycle lengths, $\lcm(3,2) = 6$. This parity is well-defined: writing $\sigma$ in any other way as a product of transpositions always yields an odd number of transpositions. The even permutations form the alternating group $A_5$, a subgroup of $S_5$ of order $5!/2 = 60$.
+\end{example}
+
 \begin{remark}
     Permutation groups are relevant in cryptography through the general linear group $\mathrm{GL}_n(\mathbb{F}_q)$ and its subgroups, which act as permutation groups on the vectors of $\mathbb{F}_q^n$. The security of certain post-quantum cryptosystems (e.g., code-based and some multivariate schemes) relies on the structure of such permutation groups.
 \end{remark}
@@ -972,6 +1148,14 @@ encryption, and digital signature schemes such as DSA and ECDSA.
 \begin{remark}
     Computing $g^x$ given $x$ (the \emph{exponentiation} problem) is efficiently solvable using the \emph{square-and-multiply} algorithm in $O(\log x)$ group multiplications. However, the reverse problem---recovering $x$ from $g^x$---is believed to be computationally infeasible in suitably chosen groups. This asymmetry is precisely what enables the Diffie--Hellman key exchange and related schemes.
 \end{remark}
+
+\begin{example}
+    In $\mathbb{Z}_{23}^\times$ with generator $g = 5$, compute $\log_5(19)$. Since $5^2 = 25 \equiv 2$, $5^4 \equiv 4$, $5^8 \equiv 16$, and
+    \begin{align}
+        5^{15} = 5^{8}\cdot 5^{4}\cdot 5^{2}\cdot 5^{1} \equiv 16 \cdot 4 \cdot 2 \cdot 5 = 640 \equiv 19 \pmod{23},
+    \end{align}
+    we obtain $\log_5(19) = 15$. In a small group this is found by brute force, but for a group of size $\sim 2^{256}$ no efficient algorithm is known---the exponentiation $x \mapsto g^x$ is a one-way function. This is the entire basis for the schemes below.
+\end{example}
 
 \begin{theorem}
     (\emph{Diffie--Hellman key agreement}) Let $G = \langle g \rangle$ be a cyclic group in which the DLP is intractable, and let $p$ be a large prime with $G = \mathbb{Z}_p^\times$. Two parties, Alice and Bob, proceed as follows:
@@ -1018,6 +1202,7 @@ print(f"A = {A}, B = {B}, shared secret K = {K}")
 # Output: A = 8, B = 19, shared secret K = 2
 \end{minted}
 
+\notebook{03-groups.ipynb}
 
 \chapter{(Finite) Fields}
 \label{ch:fields}
@@ -1118,6 +1303,14 @@ A finite field of order $p^n$ for prime $p$ and positive integer $n$ is sometime
     Every finite field $\mathbb{F}_q$ has a primitive root $g$, and every element of $\mathbb{F}_q^\times$ can be written uniquely as $g^k$ for $0 \leq k < q - 1$.
 \end{corollary}
 
+\begin{example}
+    In the field $\mathbb{F}_7$, the multiplicative group $\mathbb{F}_7^\times = \{1,2,3,4,5,6\}$ is cyclic of order $6$. The element $3$ is a primitive root, since its powers are
+    \begin{align}
+        3^1=3,\; 3^2=2,\; 3^3=6,\; 3^4=4,\; 3^5=5,\; 3^6=1 \pmod 7
+    \end{align}
+    which lists every non-zero element exactly once. Similarly, in $\mathbb{F}_{17}$, the element $3$ is a primitive root and its powers generate all of $\mathbb{F}_{17}^\times$. This cyclicity is what allows us to pose the discrete logarithm in finite-field groups: given $g^k$, recover $k$. The number of primitive roots in $\mathbb{F}_q^\times$ is exactly $\varphi(q-1)$.
+\end{example}
+
 \begin{remark}
     This cyclicity is what makes finite fields suitable for the discrete logarithm problem underlying Diffie--Hellman and ElGamal. The multiplicative group $\mathbb{F}_q^\times$ is a cyclic group of order $q - 1$, and the DLP in this group is believed to be hard for appropriately chosen prime powers $q$.
 \end{remark}
@@ -1209,9 +1402,23 @@ print(f"2 * 0x57 over GF(2^8) = {gf_mul(2, 0x57):#04x}")
     The trace map is $\mathbb{F}_{p^m}$-linear and surjective. The norm map is multiplicative, that is, $\mathrm{N}(\alpha\beta) = \mathrm{N}(\alpha)\mathrm{N}(\beta)$, and its image is all of $\mathbb{F}_{p^m}^\times$.
 \end{proposition}
 
+\begin{example}
+    Compute the trace and norm from $\mathbb{F}_{16}$ to $\mathbb{F}_2$. In $\mathbb{F}_{16} = \mathbb{Z}_2[x]/\langle x^4 + x + 1\rangle$ with $n = 4, m = 1$, the trace is
+    \begin{align}
+        \mathrm{Tr}(\alpha) = \alpha + \alpha^2 + \alpha^4 + \alpha^8 \in \mathbb{F}_2
+    \end{align}
+    and the norm is
+    \begin{align}
+        \mathrm{N}(\alpha) = \alpha^{15} \in \mathbb{F}_2^\times.
+    \end{align}
+    For example, taking $\alpha = 2$ (i.e.\ the class of $x$): $\mathrm{Tr}(2) = 2 + 4 + 16 + 256 = 278 \equiv 0 \pmod 2$, and $\mathrm{N}(2) = 2^{15} \equiv 1 \pmod 2$. As the proposition guarantees, the norm of a non-zero element lies in $\mathbb{F}_2^\times = \{1\}$, while the trace takes both values $0$ and $1$ across $\mathbb{F}_{16}$, since it is surjective.
+\end{example}
+
 \begin{remark}
     Trace and norm maps are used in pairing-based cryptography and in the design of efficient implementations of finite field arithmetic.
 \end{remark}
+
+\notebook{04-finite-fields.ipynb}
 
 \chapter{Elliptic Curves}
 \label{ch:elliptic}
@@ -1363,6 +1570,17 @@ deep result:
     where $n_2$ divides $n_1$.
 \end{theorem}
 
+\begin{example}
+    Count the rational points on $E: y^2 = x^3 + 2x + 2$ over $\mathbb{F}_{17}$. For each $x \in \mathbb{F}_{17}$ we compute $x^3 + 2x + 2 \bmod 17$ and count square roots:
+    \begin{align}
+        \begin{array}{c|ccccccccccccccccc}
+        x & 0&1&2&3&4&5&6&7&8&9&10&11&12&13&14&15&16 \\ \hline
+        x^3+2x+2 & 2&5&14&1&6&15&13&4&8&9&1&4&14&13&9&2&12
+        \end{array}
+    \end{align}
+    Summing the number of $y$ with $y^2$ equal to each value ($0$ contributes $1$ point, a nonzero quadratic residue contributes $2$) gives $\#E(\mathbb{F}_{17}) = 19$ affine points, plus the point at infinity, so $\#E(\mathbb{F}_{17}) = 20$. Here $q+1 = 18$, and $|18 - 20| = 2 \leq 2\sqrt{17} \approx 8.25$, consistent with Hasse's bound. The trace of Frobenius is $t = q + 1 - 20 = -2$.
+\end{example}
+
 \begin{definition}
     The \emph{Elliptic Curve Discrete Logarithm Problem} (ECDLP)\index{ECDLP} is: given an elliptic curve $E$ over $\mathbb{F}_q$, a point $P \in E(\mathbb{F}_q)$ of order $n$, and a point $Q$ in the subgroup generated by $P$, find the integer $k \in \{0, 1, \ldots, n-1\}$ such that $Q = kP$.
 \end{definition}
@@ -1387,6 +1605,19 @@ The \emph{Elliptic Curve Diffie--Hellman} (ECDH) key exchange is the elliptic-cu
 
 The shared secret $K = abP$ is then used to derive a symmetric key for encryption. Its security relies on the ECDLP: an eavesdropper who sees $P$, $Q_A$, and $Q_B$ must recover $abP$ without knowing $a$ or $b$.
 
+\begin{example}
+    (ECDH on a small curve) Work on the curve $E: y^2 = x^3 + 2x + 3$ over $\mathbb{F}_{67}$, with base point $P = (2, 22)$. Alice chooses the secret $a = 4$ and publishes $Q_A = 4P$; Bob chooses $b = 7$ and publishes $Q_B = 7P$. Using the doubling formulas,
+    \begin{align}
+        2P &= (47, 41), \qquad 4P = Q_A = (28, 51), \\
+        7P = Q_B &= (3, 23),
+    \end{align}
+    the latter computed as $7P = 4P + 2P + P$. Alice then computes
+    \begin{align}
+        K = a Q_B = 4(3, 23) = (25, 27),
+    \end{align}
+    and Bob computes $K = b Q_A = 7(28, 51) = (25, 27)$, so both arrive at the same shared point $(25, 27)$ whose $x$-coordinate $25$ is used to derive a key. Crucially, an eavesdropper sees only $P = (2,22)$, $Q_A = (28,51)$, and $Q_B = (3,23)$; recovering $a = 4$ thus requires solving the ECDLP.
+\end{example}
+
 \subsection{ECDSA signatures}
 
 The \emph{Elliptic Curve Digital Signature Algorithm} (ECDSA) is the elliptic-curve
@@ -1401,6 +1632,14 @@ variant of DSA. At its core, ECDSA signing and verification work as follows:
 \begin{remark}
     The nonce $k$ in ECDSA must be chosen freshly and randomly for each signature. If the same $k$ is reused for two different messages, an attacker can recover the private key $d$ from the two signatures---this is exactly the vulnerability exploited in several real-world attacks (e.g., the PlayStation~3 signing key and the Bitcoin transaction incidents).
 \end{remark}
+
+\begin{example}
+    (ECDSA sign and verify) On the curve $E: y^2 = x^3 + 2x + 3$ over $\mathbb{F}_{67}$ with base point $P = (2, 22)$ of order $n = 79$, let the private key be $d = 27$ and the public key $Q = 27P = (7, 43)$. Suppose the message hash is $z = 17$ and we choose the nonce $k = 11$. Compute $R = kP = 11P = (47, 41)$, so $r = x_R \bmod n = 47$. Then
+    \begin{align}
+        s = k^{-1}(z + rd) \bmod 79 = 11^{-1}(17 + 47 \cdot 27) \bmod 79.
+    \end{align}
+    Since $11^{-1} \equiv 36 \pmod{79}$ and $17 + 47\cdot 27 = 1286 \equiv 22 \pmod{79}$, we get $s = 36 \cdot 22 = 792 \equiv 2 \pmod{79}$. The signature is $(r, s) = (47, 2)$. To verify, compute $w = s^{-1} = 2^{-1} \equiv 40 \pmod{79}$, $u_1 = wz = 40 \cdot 17 \equiv 48 \pmod{79}$, and $u_2 = wr = 40 \cdot 47 \equiv 63 \pmod{79}$. Then $u_1P + u_2Q$ has $x$-coordinate $47 \equiv r \pmod{79}$, so the signature verifies.
+\end{example}
 
 \section{Pairings}
 
@@ -1421,6 +1660,20 @@ variant of DSA. At its core, ECDSA signing and verification work as follows:
 \begin{remark}
     Pairings have both constructive and destructive uses in cryptography. Constructively, they enable \emph{identity-based encryption}\index{identity-based encryption}, \emph{short signatures}\index{short signature}, and \emph{attribute-based encryption}. Destructively, the \emph{MOV attack} uses pairings to reduce the ECDLP on certain curves (called \emph{supersingular curves}) to the DLP in $\mathbb{F}_{q^k}$ for some extension degree $k$, where it may be solvable by index calculus. For this reason, modern protocols avoid curves susceptible to MOV-type attacks.
 \end{remark}
+
+\begin{example}
+    (Bilinearity of a pairing) Suppose $e$ is a bilinear pairing $e: G \times G \to G_T$ on a group $G$ of prime order $r$, and take $P \in G$ and scalars $a = 3, b = 4$. If we know $e(P, P)$, then we can compute the pairing at arbitrary multiples without knowing $P$'s discrete log:
+    \begin{align}
+        e(3P, 4P) = e(P, P)^{12}.
+    \end{align}
+    More concretely, if $e(g, g) = g_T$ generates $G_T$ and $e(P,P) = 2 \in G_T$, then
+    \begin{align}
+        e(aP, bP) = 2^{ab} = 2^{12} = 4096 \in G_T.
+    \end{align}
+    This bilinearity is what sandwiches the shared-secret computation in pairing-based protocols: from two public points $aP$ and $bP$, both parties (and crucially, the protocol) may compute $e(P,P)^{ab}$ directly, a value which a classical adversary without a pairing could obtain only by solving CDH.
+\end{example}
+
+\notebook{05-elliptic-curves.ipynb}
 
 \chapter{Probability}
 % ref: Mathematics of Information by Stefan Schaffler
@@ -1469,6 +1722,18 @@ A \emph{measurable space} $(\Omega, \EuScript{S})$ is a pair consisting of a \em
     A \emph{random variable}\index{random variable} on a probability space $(\Omega, \EuScript{S}, \pr)$ is a function $X: \Omega \longrightarrow \mathbb{R}$ that is measurable with respect to $\EuScript{S}$, meaning that for every interval $I \subseteq \mathbb{R}$, the pre-image $X^{-1}(I)$ is an event. If $X$ takes values in a finite or countable set, $X$ is said to be \emph{discrete}.
 \end{definition}
 
+\begin{example}
+    (Uniform sample space) Roll a fair six-sided die. Here $\Omega = \{1,2,3,4,5,6\}$ with each outcome equally likely, so $\pr(\{i\}) = 1/6$. The event $A$ = ``the roll is even'' is $A = \{2,4,6\}$ and
+    \begin{align}
+        \pr(A) = \pr(\{2\}) + \pr(\{4\}) + \pr(\{6\}) = \frac{1}{6}+\frac{1}{6}+\frac{1}{6} = \frac{1}{2}.
+    \end{align}
+    If $X$ is the random variable ``the value shown,'' then $X$ is uniform on $\{1,\ldots,6\}$ with
+    \begin{align}
+        \mathrm{E}[X] = \sum_{i=1}^{6} i \cdot \frac{1}{6} = \frac{21}{6} = 3.5
+    \end{align}
+    even though $X$ never actually takes the value $3.5$---the expectation is an average over the whole sample space, not a possible outcome.
+\end{example}
+
 \section{Conditional probability and Bayes' theorem}
 
 Conditional probability is central to cryptographic security analysis. For
@@ -1514,6 +1779,15 @@ uses the conditional probability $\pr(x|y)$ of a plaintext $x$ given a ciphertex
         \pr(M = m | C = c) = \frac{\pr(C = c | M = m) \cdot \pr(M = m)}{\sum_{m'} \pr(C = c | M = m') \pr(M = m')}
     \end{align}
     Perfect secrecy (Chapter~\ref{ch:infotheory}) requires that knowledge of $c$ does not change the a priori distribution of $m$, i.e., $\pr(m|c) = \pr(m)$ for all $m$ and $c$.
+\end{example}
+
+\begin{example}
+    (Bayes' theorem with a concrete test) A certain intrusion-detection system flags ``intrusion'' with probability $0.99$ when an attack is actually occurring, and with probability $0.05$ when there is no attack (the false-positive rate). Suppose attacks are rare, occurring with probability $0.01$. If the system raises an alarm $A$, what is the probability that an attack $D$ is really under way? By Bayes' theorem,
+    \begin{align}
+        \pr(D|A) = \frac{\pr(A|D)\pr(D)}{\pr(A|D)\pr(D) + \pr(A|\bar{D})\pr(\bar{D})}
+                 = \frac{0.99 \cdot 0.01}{0.99 \cdot 0.01 + 0.05 \cdot 0.99} \approx 0.167.
+    \end{align}
+    Despite the high sensitivity, only about $16.7\%$ of alarms correspond to real attacks, because false positives are overwhelmingly more frequent given the low base rate. This ``base-rate fallacy'' is essential to grasp when reasoning about intrusion detection, antivirus software, and other security tests.
 \end{example}
 
 \section{Random variables and expectation}
@@ -1584,6 +1858,24 @@ uses the conditional probability $\pr(x|y)$ of a plaintext $x$ given a ciphertex
     \end{align}
     Its mean is $np$ and its variance is $np(1-p)$.
 \end{definition}
+
+\begin{example}
+    (Linearity of expectation) On a random permutation of $n$ distinct items, let $X$ count the number of \emph{fixed points} (positions $i$ with $\pi(i) = i$). Write $X = X_1 + X_2 + \cdots + X_n$, where $X_i$ is the indicator that position $i$ is fixed. Each $\mathrm{E}[X_i] = \pr(\pi(i) = i) = 1/n$, so by linearity of expectation (which does \emph{not} require independence),
+    \begin{align}
+        \mathrm{E}[X] = \sum_{i=1}^n \mathrm{E}[X_i] = n \cdot \frac1n = 1.
+    \end{align}
+    On average a permutation has exactly one fixed point, regardless of $n$. This computation is subtle precisely because the $X_i$ are \emph{not} independent, yet linearity still applies.
+\end{example}
+
+\begin{example}
+    (Binomial and Chebyshev) Let $X \sim \mathrm{Bin}(100, 1/2)$, the number of heads in $100$ fair coin flips. Then $\mu = 50$ and $\sigma^2 = np(1-p) = 25$, so $\sigma = 5$. Chebyshev's inequality bounds the probability of deviating by more than $3$ standard deviations:
+    \begin{align}
+        \pr\big(|X - 50| \geq 15\big) \leq \frac{1}{3^2} = \frac19 \approx 0.111.
+    \end{align}
+    In fact the true value is far smaller (about $0.0026$ by the normal approximation), since Chebyshev is a worst-case bound valid for \emph{any} distribution---its strength is its universality, not its tightness.
+\end{example}
+
+\notebook{06-probability.ipynb}
 
 \chapter{Information Theory}
 \label{ch:infotheory}
@@ -1821,6 +2113,18 @@ distribution diverges from another. It is central to the study of
     for the appropriate joint and marginal distributions. In particular, the KL divergence measures the expected extra information gained when the true distribution is $P$ rather than the assumed distribution $Q$.
 \end{proposition}
 
+\begin{example}
+    Let $P = (0.5, 0.5)$ be the true (fair-coin) distribution and $Q = (0.6, 0.4)$ the assumed one, both over $\{H, T\}$. Then
+    \begin{align}
+        D_{\mathrm{KL}}(P \| Q) &= 0.5 \log_2\frac{0.5}{0.6} + 0.5 \log_2\frac{0.5}{0.4} \approx 0.0290 \ \text{bits},
+    \end{align}
+    whereas the reverse divergence is
+    \begin{align}
+        D_{\mathrm{KL}}(Q \| P) &= 0.6 \log_2\frac{0.6}{0.5} + 0.4 \log_2\frac{0.4}{0.5} \approx 0.0335 \ \text{bits}.
+    \end{align}
+    The two values differ, confirming that KL divergence is \emph{not} symmetric. If the assumed distribution were instead $Q = (0.5, 0.5)$, then $D_{\mathrm{KL}}(P\|Q) = 0$, matching Gibbs' inequality's equality case $P = Q$.
+\end{example}
+
 \begin{proposition}
     (\emph{Data processing inequality}) If $X \to Y \to Z$ forms a Markov chain (i.e., $Y$ is a function of $X$ and $Z$ is a function of $Y$), then
     \begin{align}
@@ -1857,6 +2161,18 @@ distribution over $\{0, 1, \ldots, 255\}$.
     A value $H(E) \approx 8$ is desirable; a value significantly below 8 indicates a vulnerability to entropy-based attacks.
 \end{remark}
 
+\begin{example}
+    Suppose a cipher's output distribution over $\{0,1\}^2$ is observed to be $\pr = (\tfrac14, \tfrac14, \tfrac14, \tfrac14)$. Then, as the proposition states,
+    \begin{align}
+        H(X) = 4 \cdot \frac14 \log_2 4 = 2 \ \text{bits},
+    \end{align}
+    the maximum for a $2$-bit alphabet. If instead the outputs are heavily biased, say $\pr = (\tfrac12, \tfrac14, \tfrac18, \tfrac18)$, the entropy drops to
+    \begin{align}
+        H(X) = \tfrac12\log_2 2 + \tfrac14\log_2 4 + \tfrac18\log_2 8 + \tfrac18\log_2 8 = \tfrac12 + \tfrac12 + \tfrac38 + \tfrac38 = 1.75 \ \text{bits}.
+    \end{align}
+    The shortfall of $0.25$ bits quantifies the non-uniformity an attacker could exploit. In practice, strong ciphers produce byte-level entropy extremely close to $8$ bits.
+\end{example}
+
 \section{Mutual information}
 
 \begin{definition}
@@ -1880,6 +2196,24 @@ distribution over $\{0, 1, \ldots, 255\}$.
 \begin{remark}
     In the context of side-channel attacks, mutual information between the secret key and a side-channel leakage signal (e.g., power consumption) measures the mutual information leakage of the device. A secure implementation should minimize $I(K; L)$ where $K$ is the key and $L$ is the leakage.
 \end{remark}
+
+\begin{example}
+    (Mutual information) Let $X$ be a fair coin and let $Y$ be a \emph{noisy copy} of $X$: with probability $q = 0.9$ the two agree, and with probability $0.1$ they differ. The joint distribution is
+    \begin{align}
+        \pr(X{=}x, Y{=}y) = \begin{cases} 0.45 & x = y \\ 0.05 & x \neq y \end{cases}
+    \end{align}
+    so $H(X) = 1$, $H(Y) = 1$, and the joint entropy is
+    \begin{align}
+        H(X,Y) = -2\big(0.45\log_2 0.45\big) - 2\big(0.05 \log_2 0.05\big) \approx 1.469 \ \text{bits}.
+    \end{align}
+    Therefore
+    \begin{align}
+        I(X;Y) = H(X) + H(Y) - H(X,Y) = 2 - 1.469 = 0.531 \ \text{bits}.
+    \end{align}
+    If $Y$ were a perfect copy ($q = 1$), then $I(X;Y) = H(X) = 1$; if $Y$ carried no information about $X$ ($q = 0.5$), then $I(X;Y) = 0$. The value $0.531$ is a quantitative measure of how much the leak reveals about the variable of interest.
+\end{example}
+
+\notebook{07-information-theory.ipynb}
 
 \section{Perfect Secrecy}
 
@@ -2113,6 +2447,22 @@ While formally a hash function maps arbitrary long messages, practical hash func
     The birthday attack is a \emph{generic} attack, meaning it applies to \emph{any} hash function and does not exploit any algebraic structure. To achieve $n$-bit security against collision attacks, a hash function must have an output length of at least $2n$ bits. This is why MD5 (128-bit output) offers at most 64-bit collision resistance, which has been broken in practice.
 \end{remark}
 
+\begin{example}
+    (Concrete collision costs) For a $64$-bit hash, the expected number of evaluations to find a collision is
+    \begin{align}
+        \sqrt{\frac{\pi \cdot 2^{64}}{2}} \approx 5.4 \times 10^9 \approx 2^{32.3},
+    \end{align}
+    feasible for a modern machine. For SHA-256 (256-bit output), the birthday bound is
+    \begin{align}
+        \sqrt{\frac{\pi \cdot 2^{256}}{2}} \approx 2^{128},
+    \end{align}
+    which is completely infeasible. In general, achieving $\kappa$-bit collision security requires a $\geq 2\kappa$-bit digest. This is the standard reasoning that forces designs like SHA-256 and SHA-3 to use at least 256 bits for a 128-bit security level.
+\end{example}
+
+\begin{example}
+    (\emph{Second pre-image vs.\ pre-image costs}) Given a target digest $y$ of an $\ell$-bit hash, a brute-force pre-image search needs about $2^\ell$ evaluations, while a second-pre-image attack on a specific message $x$ also needs about $2^\ell$. But collision finding only needs $2^{\ell/2}$. For $\ell = 128$, these are roughly $2^{128}$ vs.\ $2^{64}$ operations---a difference of $2^{64}$, explaining why collision resistance is the hardest property to maintain and the first to break (as with MD5 and SHA-1).
+\end{example}
+
 \section{Construction of hash functions}
 
 \subsection{Merkle--Damg\aa rd construction}
@@ -2177,6 +2527,8 @@ The Message Digest (version 5) algorithm (MD5) is a widely used hash function pr
 \begin{example}
     MD5 is considered \emph{completely broken}\index{MD5!broken} for collision resistance: Wang et al.\ (2004) found collisions in seconds on a standard PC. MD5 collision exploits (e.g., the Flame malware, 2012) demonstrate that MD5 must not be used for security-critical applications. However, MD5 is still used for non-security purposes such as checksums for data integrity.
 \end{example}
+
+\notebook{09-hash-functions.ipynb}
 
 \chapter{Codes}
 \label{ch:codes}
@@ -2261,6 +2613,19 @@ that is, the Hamming distance between $\mathbf{x}$ and $0$. The following proper
     The \emph{repetition code} encodes the message $\mathbf{0}$ as $\mathbf{000\cdots 0}$ and $\mathbf{1}$ as $\mathbf{111\cdots 1}$ (repeating $n$ times), giving a $[n, 1, n]$ code. It can correct $\lfloor (n-1)/2 \rfloor$ errors, but has terrible rate $1/n$.
 \end{example}
 
+\begin{example}
+    (\emph{Minimum distance and error correction}) Consider the binary code $C = \{00000, 11100, 00111, 11011\}$. The pairwise Hamming distances are:
+    \begin{align}
+        d(00000, 11100) &= 3, \quad d(00000, 00111) = 3, \quad d(00000, 11011) = 4, \\
+        d(11100, 00111) &= 4, \quad d(11100, 11011) = 3, \quad d(00111, 11011) = 3.
+    \end{align}
+    Hence the minimum distance is $d = 3$, so the code corrects $\lfloor(3-1)/2\rfloor = 1$ error and detects up to $2$. If the codeword $11100$ is transmitted and a single error flips a bit, e.g.\ the received word is $10100$, then nearest-neighbour decoding sees
+    \begin{align}
+        d(10100, 11100) &= 1, \quad d(10100, 00000) = 2, \quad d(10100, 00111) = 4, \quad d(10100, 11011) = 4,
+    \end{align}
+    and correctly decodes to $11100$. Because the sphere of radius $1$ around each codeword contains only that codeword within distance $1$, the single error is uniquely recoverable.
+\end{example}
+
 \section{Hamming Codes}
 
 \begin{definition}
@@ -2328,6 +2693,16 @@ that is, the Hamming distance between $\mathbf{x}$ and $0$. The following proper
     \end{itemize}
 \end{remark}
 
+\begin{example}
+    (A Reed--Solomon codeword) Consider $\mathrm{RS}(7, 3)$ over $\mathbb{F}_7$ with evaluation points $\alpha_1,\ldots,\alpha_7 = 0,1,2,3,4,5,6$ and message polynomial $m(x) = 1 + 2x + 3x^2$ (so $k = 3$). The codeword is the vector of evaluations:
+    \begin{align}
+        m(0) &= 1, & m(1) &= 1 + 2 + 3 = 6, & m(2) &= 1 + 4 + 12 = 17 \equiv 3, \\
+        m(3) &= 1 + 6 + 27 = 34 \equiv 6, & m(4) &= 1 + 8 + 48 = 57 \equiv 1, \\
+        m(5) &= 1 + 10 + 75 = 86 \equiv 2, & m(6) &= 1 + 12 + 108 = 121 \equiv 2 \pmod 7,
+    \end{align}
+    so $\mathbf{c} = (1, 6, 3, 6, 1, 2, 2)$. This code is $[7, 3, 5]$ and hence MDS, correcting up to $\lfloor(7-3)/2\rfloor = 2$ symbol errors---even though three different message polynomials give three points, any two corrupted symbols can be recovered because a degree-$2$ polynomial is determined by any three evaluations.
+\end{example}
+
 \begin{minted}{python}
 def rs_encode(msg, alpha, q):
     """Encode a message using a Reed-Solomon code over GF(q).
@@ -2352,6 +2727,7 @@ codeword = rs_encode(msg, alpha, q)
 print(f"Codeword: {codeword}")
 \end{minted}
 
+\notebook{10-codes.ipynb}
 
 \chapter{Complexity}
 \label{ch:complexity}
@@ -2453,6 +2829,10 @@ space) of an algorithm grow as a function of the input size $n$.
     (\emph{Cook--Levin theorem}) The Boolean satisfiability problem (SAT) is NP-complete. Consequently, SAT, 3-SAT, the Hamiltonian cycle problem, the traveling salesman problem, and the subset sum problem are all NP-complete.
 \end{theorem}
 
+\begin{example}
+    (\emph{Problems in various classes}) Primality testing is in \textbf{P}: the AKS algorithm (Agrawal--Kayal--Saxena, 2002) runs in deterministic polynomial time, so the question ``is $n$ prime?'' belongs to \textbf{P}. Factoring $N$ into primes is widely believed \emph{not} to be in \textbf{P}, but it lies in $\mathbf{NP} \cap \mathbf{coNP}$: a certificate (the factorisation) lets us verify it in polynomial time, and a \emph{no}-instance is witnessed by a prime certificate. Its $O(2^{\log N)^{1/3}})$-ish running time (via the number field sieve) is exponential in the \emph{bit-length} $\log N$, which is why 2048-bit moduli are still safe despite $N$ itself being astronomically large.
+\end{example}
+
 \section{Relevance to cryptography}
 
 \begin{remark}
@@ -2521,6 +2901,8 @@ $n$-bit symmetric key.
 
 
 
+
+\notebook{11-complexity.ipynb}
 
 % \chapter{References}
 

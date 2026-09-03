@@ -1,13 +1,13 @@
 {
   "jobname": "\"Mathematical Preliminaries\"",
   "md5": "0E24AFDCDC1732ED25FDD90E081CD767",
-  "timestamp": "20260903014624",
+  "timestamp": "20260903071648",
   "cachefiles": [
     "0426F1C9E133380D7E5CA37C67948CC4.highlight.minted",
-    "1D848FA9123D232EAD9F4DF3C2034389.highlight.minted",
     "24F918A902936001A951CD296BC1F9E1.highlight.minted",
     "6A8E2A2C991028ED46BE8D1C16DB00A9.highlight.minted",
     "7DD2193C17B204B72E3BB99E61862BE4.highlight.minted",
+    "CDD2F8682B5048CCC7ED0BC52EB01DF5.highlight.minted",
     "F28AB19614573A8529656BF14656DAE0.highlight.minted",
     "_0E24AFDCDC1732ED25FDD90E081CD767.index.minted",
     "dracula.style.minted"
