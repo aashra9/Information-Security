@@ -1,3 +1,4 @@
+# LaTeX
 *.aux
 *.log
 *.out
@@ -5,7 +6,35 @@
 *.synctex.gz
 *.fls
 *.fdb_latexmk
-*.bib
-*.sty
+*.bbl
+*.blg
+*.bcf
+*.run.xml
 *.idx
-*.dat
+*.ind
+*.ilg
+*.brf
+_minted/
+build/
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+.jupyter/
+*.ipynb_checkpoints
+
+# Lean
+.lake/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Outputs
+*.pdf
+
+# Misc artifacts
+passwd_hash_v1.txt

@@ -1,0 +1,677 @@
+\ProvidesPackage{InfoSec}
+%--- We create a style file for all projects related to matroids.
+
+
+% Author: Ahmed Ashraf
+% Email: aashra9@gmail.com
+% Dated: March 09, 2025
+% Version: 2.3
+
+
+%--- Notation for this document. Skip it now. Only read if needed
+%--- TCS: Theoretical Computer Science
+%--- TOC: Table of Contents
+
+
+\usepackage[utf8]{inputenc}
+%--- This specifies an input encoding. We will be using UTF-8 encoding.
+%--- For example, we can write Résumé rather than R\'esum\'e directly into the latex document.
+%--- This might be redundant in newer versions.
+\usepackage[T1]{fontenc}
+%--- supports accented characters
+\usepackage{lmodern}
+%--- The Latin Modern fonts
+\usepackage{textcomp}
+%--- Text Companion
+
+
+% \usepackage{microtype}
+
+
+\usepackage[margin=1in]{geometry}
+
+
+
+\usepackage{etex}
+%--- This increase the number of registers available for allocation
+%--- The newer distribution may not need this
+%--- This is important
+
+
+
+
+
+%--- Package for creating index 
+\usepackage{imakeidx} % make index
+\makeindex
+% \makeindex[name=notation, title=Notation Index]
+% \makeindex[name=general, title=General Index]
+%--- We can make more indices. 
+\usepackage[toc,page]{appendix}
+%--- We would want to have an appendix and include it in TOC
+
+
+% customizing appendices
+
+%--- We tried using the package: glossaries
+%--- This was not working correctly
+
+
+
+
+%--- For epigraphs/quotations and margin notes
+\usepackage{epigraph} % for epigraph and quotations
+\setlength{\epigraphwidth}{0.6\textwidth}
+\usepackage{marginnote} % for margin note
+\usepackage{tcolorbox}
+\tcbuselibrary{most}
+
+%--- \usepackage{glossaries}
+%--- glossary for symbols and notation asked by overleaf good for bigger documents
+%--- We use glossaries-extra to include list of symbols
+%--- There is alternative way to include it as a chapter within appendices
+% \usepackage[symbols,nogroupskip]{glossaries-extra}
+% \makeglossaries
+%--- We would like to include list of figures, tables, symbols, algorithms in the toc, the following does that. The option [nottoc] avoid the self-reference of toc.
+\usepackage[nottoc]{tocbibind}
+
+
+
+% New definition or changes
+\usepackage{dialogue} % for inserting dialogue
+
+
+
+
+%--- General Math Packages
+\usepackage{amsmath,amssymb, amsbsy,amsthm, amsfonts, amscd} 
+%--- amsmath: general math eg. \operatorname{}
+%--- amssymb: math symbols eg. \nRightarrow
+%--- amsbsy: bold symbols eg. \boldsymbol{\alpha}
+%--- amscd: commutative diagrams eg. \begin{CD} A @>>> B \end{CD}
+%--- amsthm: theorem-like envirom=nments eg. \newtheorem{theorem}{Theorem}
+%--- amsfonts: mathematical fonts eg. \mathfrak{}
+
+
+
+
+%--- Special Math Packages
+\usepackage{stmaryrd, mathrsfs, thmtools, upgreek, mathtools, faktor, ytableau, shuffle, bm, simplebnf}   
+%--- stmaryrd: TCS symbols eg. \llbracket \rrbracket, diamond
+%--- mathrsfs: Raph Smith Formal Script eg. \mathscr{} looks better
+%--- thmtools: Clickable theorem eg. example continues
+%--- upgreek: Upright greek letters eg. updelta
+%--- mathtools: Extra formatting of equations eg. for dcases
+%--- faktor: Nicely formatting quotient groups.
+%--- kbordermatrix: for matrices with labelling entries outside the border
+%--- ytableau: for making young tableau
+%--- shuffle: for shuffle product
+%--- mathabx: squigly arrows
+%--- bm: for bold font for 0 and 1
+%--- syntax: for Backus Naur form of syntax
+\usepackage{manfnt} %--- for Bourbaki's symbol \dbend
+%--- Note: Use \dbend without (dollar) math environment
+\usepackage[makeroom]{cancel} % for striking a letter
+%--- cancel: for striking a letter, makeroom: makes it prettier
+%--- for writing formal proofs in tree format
+\usepackage{bussproofs}
+\usepackage{pdflscape}
+%--- for putting landscaped pages
+
+% %-- the package mathabx is creating problems so we plan to load locally the needed macros
+% %--- for squigarrow
+% \DeclareFontFamily{U}{mathx}{}
+% \DeclareFontShape{U}{mathx}{m}{n}{<-> mathx10}{}
+% \DeclareSymbolFont{mathx}{U}{mathx}{m}{n}
+% \DeclareMathSymbol{\squigrightarrow}{\mathrel}{mathx}{"14}
+% \DeclareMathSymbol{\leftsquigarrow}{\mathrel}{mathx}{"1C}
+% \newcommand{\bbone}{\text{\usefont{U}{bbold}{m}{n}1}}  % Raw font hack
+% \newcommand{\bbzero}{\text{\usefont{U}{bbold}{m}{n}0}}  % Raw font hack
+
+
+
+
+\usepackage{minted}
+\newmintinline[lean]{lean4}{bgcolor=white}
+\newminted[leancode]{lean4}{fontsize=\footnotesize}
+\usemintedstyle{tango}  % a nice, colorful theme
+
+
+\usepackage{etoolbox}
+%--- etoolbox: this will help us define subtitle
+%--- which we do right below
+\makeatletter
+\def\subtitle#1{\gdef\@subtitle{#1}}
+\patchcmd\maketitle
+  {{\LARGE \@title \par}}
+  {{\LARGE \@title \par}%
+   \vskip 1.5em
+   {\Large \@subtitle \par}}
+\makeatother
+
+
+% Bibliography is configured per-document (bibtex or biblatex).
+
+
+
+
+
+
+
+%--- For hyperlinking text
+\usepackage[pdftex, linktoc=all]{hyperref}
+%--- Use \texorpdfstring{<TeX>}{<pdfstring>} for mathematical section names
+%--- backref=page option: bibliography entry will include a link to the page(s) where the citation occurred
+
+
+
+%--- The code below is going to make section headings clickable and hyperlinked to the place where they occur in table of contents. This is taken from here: https://tex.stackexchange.com/questions/251904/hyperlinks-from-chapter-and-section-headings-back-to-the-table-of-contents and is the work of John Kormylo
+% \makeatletter
+% \let\hyperchapter\chapter
+% \def\chapter{\@ifstar\starchapter\mychapter}
+% \def\starchapter{\hyperchapter*}
+% \newcommand{\mychapter}[2][\@empty]% #1=optional (toc and top of page), #2=title
+% {\ifx#1\@empty \hyperchapter[#2]{\hyperlink{toc.chapter.\thechapter}{#2}}
+%  \else \hyperchapter[#1]{\hyperlink{toc.chapter.\thechapter}{#2}}
+%  \fi}
+
+% \let\hypersection\section
+% \def\section{\@ifstar\starsection\mysection}
+% \def\starsection{\hypersection*}
+% \newcommand{\mysection}[2][\@empty]% #1=optional (toc), #2=title
+% {\ifx#1\@empty \hypersection[#2]{\hyperlink{toc.section.\thesection}{#2}}
+%  \else \hypersection[#1]{\hyperlink{toc.section.\thesection}{#2}}
+%  \fi}
+
+% \let\hypersubsection\subsection
+% \def\subsection{\@ifstar\starsubsection\mysubsection}
+% \def\starsubsection{\hypersubsection*}
+% \newcommand{\mysubsection}[2][\@empty]% #1=optional (toc), #2=title
+% {\ifx#1\@empty \hypersubsection[#2]{\hyperlink{toc.subsection.\thesubsection}{#2}}
+%  \else \hypersubsection[#1]{\hyperlink{toc.subsection.\thesubsection}{#2}}
+%  \fi}
+
+%--- The below code also solve the said problem without having hassle with the appendix package.
+%--- This is taken from https://tex.stackexchange.com/questions/32495/linking-the-section-text-to-the-toc and is the work of Gonzalo Medina
+\usepackage[explicit]{titlesec}
+
+
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries}{\chaptertitlename\ {\fontfamily{cmr}\selectfont\thechapter}}{20pt}{\hyperlink{chap-\thechapter}{\Huge#1}
+\addtocontents{toc}{\protect\hypertarget{chap-\thechapter}{}}}
+\titleformat{name=\chapter,numberless}
+  {\normalfont\huge\bfseries}{}{-20pt}{\Huge#1}
+\titleformat{\section}
+  {\normalfont\Large\bfseries}{\thesection}{1em}{\hyperlink{sec-\thesection}{#1}
+\addtocontents{toc}{\protect\hypertarget{sec-\thesection}{}}}
+\titleformat{name=\section,numberless}
+  {\normalfont\Large\bfseries}{}{0pt}{#1}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}{\thesubsection}{1em}{\hyperlink{subsec-\thesubsection}{#1}
+\addtocontents{toc}{\protect\hypertarget{subsec-\thesubsection}{}}}
+\titleformat{name=\subsection,numberless}
+  {\normalfont\large\bfseries}{}{0pt}{#1}
+
+ %--- This code will make the chapter, section, subsection headings to be hyerlinked to their respective places in TOC
+% \let\hyperappchapter\chapter
+% \def\appchapter{\@ifstar\starappchapter\myappchapter}
+% \def\starappchapter{\hyperappchapter*}
+% \newcommand{\myappchapter}[2][\@empty]% #1=optional (toc and top of page), #2=title
+% {\ifx#1\@empty \hyperchapter[#2]{\hyperlink{toc.appendix.\thechapter}{#2}}
+%  \else \hyperchapter[#1]{\hyperlink{toc.appendix.\thechapter}{#2}}
+%  \fi}
+\makeatother
+
+
+%--- The chapter headings of appendices are redirecting to frontpage rather than their respective position on toc.
+%--- To fix this problem, we are using the following:
+
+
+
+%--- The color setup for hyperlinking text.
+\hypersetup{
+    colorlinks = true,
+    linkcolor = blue,
+    citecolor = green,
+    urlcolor = magenta
+}
+
+
+
+
+%--- To use colors in the document. These can be applied to text, backgrounds, rules and boxes. Some colors are predefined: red, blue, green, yellow, cyan, magenta, black, white
+\usepackage{xcolor}
+%--- We can define colors via \definecolor{darkblue}{rgb}{<R>, <G>, <B>}
+%--- We can take some help from https://latexcolor.com/
+
+
+
+%--- Packages for introducing graphical capabilities
+\usepackage{graphicx, pgf, tikz}
+%--- graphicx: for including and manipulating graphics eg. \includegraphics
+%--- pgf: "portable graphics format", included in tikz
+%--- tikz:
+%--- the manual for pgf and tikz can be found here: https://www.bu.edu/math/files/2013/08/tikzpgfmanual.pdf
+\usetikzlibrary{decorations, calc, matrix, cd, graphs, arrows, arrows.meta, quotes, positioning, automata}
+%--- These are the libraries used.
+%--- Some documentation is here: https://tikz.dev/libraries
+%--- tikz library automata for DFA, NFA
+\usetikzlibrary{trees}
+
+
+
+
+
+
+%--- For testing
+\usepackage{blindtext}
+%--- to insert blind text for testing eg. \blindtext
+
+
+\usepackage{booktabs}
+
+\usepackage{array, blkarray}
+%--- array: for various kind of arrays: multicolumn, tabular environment
+%---blkarray: for environments: matrix, bmatrix, pmatrix, vmatrix
+
+
+
+%--- Auxiliary packages for formatting figures, tables and other floats
+\usepackage{rotating, subcaption, longtable, placeins, ragged2e, float} 
+%--- rotating: for rotating figures
+%--- longtable: for tables spanning more than one page
+%--- subcaption: captions for subtables
+%--- placeins: to keep floats section-wise
+%--- ragged2e: the modified package for tackeling ragged text. Check: https://ctan.org/pkg/ragged2e?lang=en
+%--- float: to put figures and tables strictly where we would like them to be
+
+
+\usepackage{bbm}
+\usepackage{tablefootnote} %--- for footnotes in tables
+
+%--- Counting version number
+\usepackage{mVersion} 
+%--- mVersion: provides version with build number.
+\setVersion{2025.7} 
+%--- Sets the "official" version number. We are using the format year.month.build
+\increaseBuild 
+%--- Increases the build number at each build.
+
+
+
+
+% %--- Reviewing the draft
+% \usepackage{showkeys}
+% %--- this package shows keys.
+% \usepackage[left]{showlabels}
+% %--- this package shows labels
+% %--- we can chose whose labels to be shown as below
+% \showlabels{ref}
+% \showlabels{cite}
+% \showlabels[\fbox]{bibitem}
+
+
+
+
+
+%--- NOTES
+%- Labels of figures should always be after their caption.
+
+
+% % for header
+% \usepackage[automark,headsepline]{scrlayer-scrpage} % more compatibility with scrreprt than fancyhdr
+% \clearpairofpagestyles
+% \cfoot[\pagemark]{\pagemark}
+% \lehead{\headmark} % left even shows chapter name
+% \rohead{\headmark} % right odd shows section name
+% \pagestyle{scrheadings}
+
+
+% \usepackage[frame,cmtip,arrow,matrix,line,graph,curve]{xy}
+% \usepackage{graphpap,color,paralist,pstricks}
+% \usepackage[mathscr]{eucal}
+% \usepackage[matha,mathb]{mathabx}
+% \usepackage{epic,eepic}
+% \usepackage{yfonts}
+% \usepackage{enumerate}
+% \usepackage{blkarray}
+% \usepackage{mathtools}
+% \usepackage{setspace}
+\usepackage[english]{babel}
+
+% fonts
+%\usepackage[T1]{fontenc}
+\usepackage{lmodern}   % Latin modern for sans serif
+%\usepackage{mathpazo}  % Palatino for serif and math
+%--- mathpazo makes font look nice, but it conflicts with bm
+\usepackage{sansmath} % for sanserif
+% \usepackage[protrusion=true,expansion=true]{microtype}
+%\usepackage{mathscinet}
+
+
+
+%\usepackage{breqn} % for equations spanning multiple lines
+
+\usepackage[ruled,,vlined,linesnumbered]{algorithm2e}
+\RestyleAlgo{ruled}
+
+%--------- TikZ commands for algorithms as flowcharts
+\usetikzlibrary{shapes.geometric, arrows}
+\tikzstyle{startstop} = [rectangle, rounded corners, 
+minimum width=3cm, 
+minimum height=1cm,
+text centered, 
+draw=black, 
+fill=red!30]
+
+\tikzstyle{io} = [trapezium, 
+trapezium stretches=true, % A later addition
+trapezium left angle=70, 
+trapezium right angle=110, 
+minimum width=3cm,
+minimum height=1cm, text centered, 
+draw=black, fill=blue!30]
+
+\tikzstyle{process} = [rectangle, 
+minimum width=3cm, 
+minimum height=1cm, 
+text centered, 
+text width=3cm, 
+draw=black, 
+fill=orange!30]
+
+\tikzstyle{decision} = [diamond,
+aspect=2,
+text centered,
+draw=black,
+fill=green!30]
+
+
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+
+
+\usepackage{newfloat}
+%\usepackage{tocloft}
+
+% Define new float environment
+\DeclareFloatingEnvironment[
+  fileext=lof,
+  listname={List of Flowcharts},
+  name=Flowchart,
+]{flowchart}
+
+% Customize LoF title
+%\newcommand{\listofflowchartsname}{List of Flowcharts}
+
+
+
+
+\usepackage{etoc}
+
+\usepackage{bbding}
+
+
+
+
+
+% linespread
+%\usepackage[onehalfspacing]{setspace}
+
+%--- We do not need the below code anymore, it is automated.
+% for bibliography
+% the following code will only show cited references in bibilography
+% \makeatletter
+% \let\@@citation@@=\citation
+% \renewcommand{\citation}[1]{\@@citation@@{#1}%
+% \@for\@tempa:=#1\do{\@ifundefined{cit@\@tempa}%
+%   {\global\@namedef{cit@\@tempa}{}}{}}%
+% }
+% \def\@lbibitem[#1]#2#3\par{%
+%   \@ifundefined{cit@#2}{}{\item[\@biblabel{#1}\hfill]}%
+%   \if@filesw
+%       {\let\protect\noexpand
+%        \immediate
+%        \write\@auxout{\string\bibcite{#2}{#1}}}\fi\ignorespaces
+%   \@ifundefined{cit@#2}{}{#3}}
+% \def\@bibitem#1#2\par{%
+%   \@ifundefined{cit@#1}{}{\item}%
+%   \if@filesw \immediate\write\@auxout
+%     {\string\bibcite{#1}{\the\value{\@listctr}}}\fi\ignorespaces
+%   \@ifundefined{cit@#1}{}{#2}}
+% \makeatother
+
+
+
+
+
+
+
+
+
+
+
+
+% various environments
+% various environments
+\theoremstyle{remark}
+\newtheorem{theorem}{Theorem}[chapter] % change this later to section
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{nonexample}[theorem]{Nonexample}
+% a different one for example-likes
+\theoremstyle{remark}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{jargon}[theorem]{Jargon}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{question}[theorem]{Question}
+\newtheorem{fallacy}[theorem]{Fallacy}
+\newtheorem{paradox}[theorem]{Paradox}
+\newtheorem{adage}[theorem]{Adage}
+\newtheorem{bias}[theorem]{Bias}
+\newtheorem{effect}[theorem]{Effect}
+\newtheorem{misconception}[theorem]{Misconception}
+\newtheorem{note}[theorem]{Note}
+\newtheorem{choice}[theorem]{Choice}
+\newtheorem{convention}[theorem]{Convention}
+\newtheorem{myth}[theorem]{Myth}
+\newtheorem{dequivalence}[theorem]{Equivalent Definitions}
+
+
+
+% Scratchwork
+% idea from "Proofs by Jay Cummings"
+\newtheorem{scratchwork}[theorem]{Scratchwork} 
+
+\newtheorem{axioms}[theorem]{Axioms}
+\newtheorem{example}[theorem]{Example}
+%\newtheorem{problem}[theorem]{Problem}
+%\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{observation}[theorem]{Observation}
+\newtheorem{formula}[theorem]{Formula}
+\newtheorem{problem}[theorem]{Problem}
+
+
+
+
+
+
+%--- Commands
+
+%--- Different types of equalities 
+\newcommand{\defn}{\overset{\text{def}}{=}} 
+%--- should be read "_____defined by_____" or "______defined as______"
+\newcommand{\givn}{\overset{\text{by}}{=}} 
+%--- should be read "_____given by_______"
+\newcommand{\letn}{\overset{\text{be}}{=}} 
+%--- should be read "Let  ______ be __________"
+\newcommand{\setn}{\overset{\text{set}}{=}}
+%--- should be read "set _______ to be _______"
+\newcommand{\detn}{\overset{\text{den}}{=}} 
+%--- should be read "Let _______ denote _______"
+
+
+% Quotient
+\def\quotient#1#2{%
+    \raise1ex\hbox{$#1$}/\lower1ex\hbox{$#2$}%
+}
+
+
+\newcommand{\innote}[2]{%
+  \noindent
+  \colorbox{gray!10}{% light gray background
+    \parbox{\dimexpr\textwidth-2\fboxsep}{% adjust width for padding
+      \text{#1} #2
+    }%
+  }%
+  \medskip
+}
+
+%--- Sage Math Symbol
+\definecolor{ao}{rgb}{0.0, 0.0, 1.0}
+\newcommand\Sage{\textcolor{ao}{\mathsf{Sage}}~}
+
+%--- Can use \bf 
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf} 
+
+%--- Multichoose symbol
+\def\multichoose#1#2{\ensuremath{\left(\kern-.3em\left(\genfrac{}{}{0pt}{}{#1}{#2}\right)\kern-.3em\right)}}
+
+%--- Integers in sans math
+\newcommand{\sanset}[1]{\mbox{\sansmath$\mathsf{#1}$}}
+
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+%--- sidenote
+\newcommand{\sidenote}[1]{%
+  \marginpar{%
+    \vspace{1em}% <-- adjust this value to move it down more
+    \begin{tcolorbox}[
+        enhanced,
+        colback=red!10, % Background color
+        boxrule=0pt,
+        sharp corners,
+        left=1pt,
+        right=1pt,
+        top=1pt,
+        bottom=1pt,
+        width=\marginparwidth,
+        boxsep=0pt
+      ]
+      \footnotesize #1
+    \end{tcolorbox}
+  }%
+}
+
+% \newcommand{\sidenote}[1]{%
+%   %\refstepcounter{sidenote}%
+%   \begin{tcolorbox}[tile,flip title={sharp corners},colback=red!10]
+%   \marginpar[\raggedleft\footnotesize #1 ]%
+%             {\raggedright\footnotesize #1}%
+  
+% }
+% \newcommand{\sidenote}[1]{\marginnote{
+%   \begin{tcolorbox}[tile,flip title={sharp corners},
+%       colback=red!10]
+%       \footnotesize #1
+%   \end{tcolorbox}
+%   }}
+
+
+%--- Norm
+\newcommand{\norm}[1]{\ensuremath{ \left\| #1 \right\| }}
+
+% %--- Circle integer
+% \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+%             \node[shape=circle,draw,inner sep=2pt] (char) {#1};}} % circling
+% %--- We use the circled when we would like to partition our proof of showing 1 -> 2-> 3 -> ..
+
+%--- 
+\DeclareMathOperator*{\bigstarr}{\raisebox{-0.6ex}{\scalebox{2.5}{$\star$}}}
+
+%--- For qnomial coefficient
+\newcommand{\qnomial}[2]{%
+  \genfrac{[}{]}{0pt}{}{#1}{#2}%
+}
+
+%--- For square notation of stirling numbers. We might just use S(n, k)
+\newcommand{\stirling}[2]{%
+  \genfrac{[}{]}{0pt}{}{#1}{#2}%
+}
+
+%--- For a bigger sum symbol as a matrix entry
+\newcommand\dsum[2]{{\displaystyle\sum_{#1}^{#2}}} 
+
+
+
+\newcommand{\tikzmark}[2]{\tikz[overlay,remember picture] \node[minimum width=1.5em] (#1) {#2};}
+
+\newcommand\towrite[1]{\textcolor{red}{#1}}
+
+%--- for dotted box via tikz
+\def\dottedbox{\tikz\node[draw=black,dotted,minimum width=1em,minimum height=1em] {};}
+
+
+%--- Bourbaki caution symbol
+\newcommand{\caution}{\raisebox{0.8ex}{\scalebox{0.5}{\dbend}}}
+
+
+
+
+%--- General notation
+%--- It is notation that is common to many areas
+\DeclareMathOperator\pr{pr} % probability
+\DeclareMathOperator\supp{supp} % support of a probability function
+
+
+
+
+%\DeclareMathOperator\L{\mathcal{L}}
+
+
+% Sets
+\DeclareMathOperator\card{card} %  cardinality of a set
+% Functions
+\DeclareMathOperator\mex{mex} %  minimal excludant function
+\DeclareMathOperator\dom{dom} % domain of a function
+\DeclareMathOperator\ran{ran} % range of a function
+
+% Relations
+\DeclareMathOperator\Rel{Rel} % induced relatios
+\DeclareMathOperator\Equiv{Equiv} % equivalence relation
+\DeclareMathOperator\Par{Par} % partition
+\DeclareMathOperator\Sym{Sym} % symmetric closure
+\DeclareMathOperator\SDR{SDR} % system of distinct representatives
+% we use three (or more) letter words for operators
+
+
+
+% Logic
+\newcommand{\up}[1]{\uparrow \hspace{-1mm} {#1}} 
+\newcommand{\down}[1]{\downarrow \hspace{-1mm} {#1}} 
+\newcommand{\st}{\hspace{2mm}{\supset}\kern-1em{-} \hspace{2mm}}
+\newcommand{\true}{\texttt{True}}
+\newcommand{\false}{\texttt{False}}
+\newcommand{\wff}{\mathrm{wff}} % well-formed formulas
+\newcommand{\PL}{\mathsf{PL}} % propositional logic
+\newcommand{\Var}{\mathrm{Var}} % set of variables of propositional logic
+
+
+
+
+
+\newcommand{\FBT}{\mathrm{FBT}}
+\newcommand{\GF}{\mathrm{GF}} % Galois field
+\newcommand{\lcm}{\mathrm{lcm}}
+\newcommand{\wt}{\mathrm{wt}} % weight of a codeword
+\newcommand{\enc}{\mathrm{enc}} % encoding
+\newcommand{\dec}{\mathrm{dec}} % decoding
+
+

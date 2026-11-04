@@ -2,7 +2,11 @@ name: Lean Action CI
 
 on:
   push:
+    paths:
+      - 'Mathematical-Preliminaries/Lean-Files/**'
   pull_request:
+    paths:
+      - 'Mathematical-Preliminaries/Lean-Files/**'
   workflow_dispatch:
 
 jobs:
